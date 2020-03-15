@@ -10,13 +10,13 @@ We decided to make a bot to play the game with an AI.
 
 ## Pictures
 
-![](data/img_masked.png)
+![](data/player.gif)
 
 ## Get started
 
 * `launch "Unrailed!"`
 * `set the resolution to 800x600 px`
-* `set the first player to the yellow Penguin with the azerty layout`
+* `set the first player to the orange Penguin with the azerty layout`
 * `git clone https://github.com/Naexys/Unrailed_AI.git`
 * `cd Unrailed_AI/src`
 * `python main.py`

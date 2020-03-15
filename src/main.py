@@ -12,14 +12,16 @@ ESC_KEY = 27
 FRAME_RATE = 10
 SLEEP_TIME = 1 / FRAME_RATE
 
-"""
-debug.save_screenshot()
+"""Remove on last commit"""
 
-im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
-debug.debug_save(im)
+DEBUG = False
+
+if DEBUG:
+    debug.debug_main()
+    exit()
 
 
-"""
+
 capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE) # We create the object WindowCapture that can capture the "Unrailed!"
 capture.start() # Function in capture that start recording
 

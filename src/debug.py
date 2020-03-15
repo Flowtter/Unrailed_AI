@@ -8,11 +8,22 @@ import detectplayer
 import pyautogui
 import win32gui
 
+
+
+def debug_main():
+    """function to replace the main to keep it clean"""
+
+    #save_screenshot()
+    im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
+    debug_show(im)
+    #print(convert_HSV(45))
+    #orint(get_pixel_color(im, 235, 310))
+    #debug_save(im)
+
 # functions that allow you to work on a single screenshot instead of on the game
 
-# function that shows the image
-
 def debug_show(im):
+    """function that shows the image"""
     trees.draw_trees_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     detectplayer.draw_player(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
@@ -22,19 +33,23 @@ def debug_show(im):
         if k == 27:
             break
 
-
-# function that saves the image
+def show(im):
+    """function that shows the image without edit"""
+    cv2.imshow("im", im)
+    while True:
+        k = cv2.waitKey(1) & 0xFF
+        if k == 27:
+            break
 
 def debug_save(im):
+    """function that saves the image"""
     trees.draw_trees_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     detectplayer.draw_player(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     cv2.imwrite("../data/img_masked.png", im)
 
-
-# functions that take a single screnshot of the game to work on it
-
 def single_screenshot():
+    """function that take a single screnshot of the game to work on it"""
     hwnd = win32gui.FindWindow(None, "Unrailed!")
     if not hwnd:
         raise Exception("Window not found!")
@@ -54,14 +69,14 @@ def single_screenshot():
         )
         
 def save_screenshot():
+    """function that take a single screnshot of the game and save it"""
     cv2.imwrite("../data/img_debug.png", single_screenshot())
 
 
 # functions to work on the image in BGR
 
-# function to get the pixel color
-
 def get_pixel_color(im, x, y):
+    """function to get the pixel color"""
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
         raise Exception("get pixel: coordinate need to be positive!")
@@ -70,9 +85,9 @@ def get_pixel_color(im, x, y):
 
     raise Exception("get pixel: x and y out of range!")
 
-# function to set the pixel color
 
 def set_pixel_color(im, x, y, color):
+    """function to set the pixel color"""
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
         raise Exception("get pixel: coordinate need to be positive!")
@@ -81,9 +96,9 @@ def set_pixel_color(im, x, y, color):
         return im
     raise Exception("get pixel: x and y out of range!")
 
-# function to set an area of pixels color
 
 def set_area_color(im, x, y, color, size):
+    """function to set an area of pixels color"""
     half_size = size // 2
     x_half, y_half = x - half_size, y - half_size
     for i in range(size):
@@ -93,6 +108,6 @@ def set_area_color(im, x, y, color, size):
     return im
 
 
-# function to convert HSV percentage in 8bit value
 def convert_HSV(color):
+    """function to convert HSV percentage in 8bit value"""
     return color * 255 / 100
