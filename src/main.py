@@ -5,7 +5,7 @@ import sys
 import axe
 import trees
 
-image = cv2.imread("..\data\img_2.png")
+image = cv2.imread("../data/" + sys.argv[1])
 
 axe.draw_axe_countours(image, cv2.cvtColor(image, cv2.COLOR_BGR2GRAY))
 trees.draw_trees_contours(image, cv2.cvtColor(image, cv2.COLOR_BGR2HSV))
