@@ -4,3 +4,6 @@ __pycache__/
 # Python env
 env/
 venv/
+
+# vscode
+.vscode/
