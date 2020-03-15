@@ -5,6 +5,8 @@ import axe
 import trees
 import time
 import detectplayer
+import pyautogui
+import win32gui
 
 # functions that allow you to work on a single screenshot instead of on the game
 

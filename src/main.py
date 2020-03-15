@@ -11,11 +11,13 @@ ESC_KEY = 27
 
 FRAME_RATE = 10
 SLEEP_TIME = 1 / FRAME_RATE
-"""
-im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
-debug.debug_show(im)
 
-windowcapture.save_screenshot()
+debug.save_screenshot()
+
+im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
+debug.debug_save(im)
+
+
 """
 capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE) # We create the object WindowCapture that can capture the "Unrailed!"
 capture.start() # Function in capture that start recording
@@ -34,3 +36,4 @@ while True:
         break
 
 cv2.destroyAllWindows()
+"""
