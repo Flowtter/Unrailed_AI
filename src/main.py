@@ -12,6 +12,7 @@ ESC_KEY = 27
 FRAME_RATE = 10
 SLEEP_TIME = 1 / FRAME_RATE
 
+"""
 debug.save_screenshot()
 
 im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
@@ -36,4 +37,3 @@ while True:
         break
 
 cv2.destroyAllWindows()
-"""
