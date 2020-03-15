@@ -1,5 +1,6 @@
 import pyautogui
 import win32gui
+import time
 
 def screenshot(window_title=None):
     if window_title:
@@ -17,3 +18,8 @@ def screenshot(window_title=None):
     else:
         im = pyautogui.screenshot()
         return im
+
+def show_screenshot():
+    im = screenshot('Calculator')
+    if im:
+        im.show()
