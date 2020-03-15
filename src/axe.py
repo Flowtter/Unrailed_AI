@@ -9,7 +9,7 @@ def get_axe_location(image_gray):
        and return axe location"""
 
     result = cv2.matchTemplate(image_gray, template, cv2.TM_CCOEFF_NORMED)
-    location = np.where(result >= 0.9)     # trust me that threshold is working 89
+    location = np.where(result >= 0.9)     # trust me that threshold is working
     return location
 
 def draw_axe_countours(image, image_gray, color=(255, 0, 255)):

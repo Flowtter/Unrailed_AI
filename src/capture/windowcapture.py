@@ -43,11 +43,12 @@ class WindowCapture:
         if not hwnd:
             raise Exception("Window not found!")
 
-        x, y, x1, y1 = win32gui.GetClientRect(hwnd)
+        l, t, r, d = win32gui.GetClientRect(hwnd)
+        x, y = win32gui.ClientToScreen(hwnd, (l, t))
         return cv2.cvtColor(
             np.asarray(pyautogui.screenshot(region=(
-                *win32gui.ClientToScreen(hwnd, (x, y)),
-                *win32gui.ClientToScreen(hwnd, (x1 - x, y1 - y))
+            x, y,
+            *win32gui.ClientToScreen(hwnd,(r-x, d-y))
             ))),
             cv2.COLOR_RGB2BGR
         )
