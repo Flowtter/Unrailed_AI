@@ -8,7 +8,7 @@ import detectplayer
 
 # functions that allow you to work on a single screenshot instead of on the game
 
-# function that show the image
+# function that shows the image
 
 def debug_show(im):
     trees.draw_trees_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
@@ -21,7 +21,7 @@ def debug_show(im):
             break
 
 
-# function that save the image
+# function that saves the image
 
 def debug_save(im):
     trees.draw_trees_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))

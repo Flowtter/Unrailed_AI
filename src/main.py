@@ -15,11 +15,6 @@ SLEEP_TIME = 1 / FRAME_RATE
 im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
 debug.debug_show(im)
 
-
-#print(debug.convert_HSV(64))
-
-
-
 windowcapture.save_screenshot()
 """
 capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE) # We create the object WindowCapture that can capture the "Unrailed!"
