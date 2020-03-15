@@ -17,5 +17,5 @@ We decided to make a bot to play the game with an AI.
 * `launch "Unrailed!"`
 * `set the resolution to 800x600 px`
 * `git clone https://github.com/Naexys/Unrailed_AI.git`
-* `cd Unrailed_AI`
+* `cd Unrailed_AI/src`
 * `python main.py`
