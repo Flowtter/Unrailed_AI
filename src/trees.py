@@ -21,7 +21,7 @@ def draw_trees_contours(image, hsv_image, color=(0, 255, 0)):
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask, 8, cv2.CV_32S)
     _remove_grass_from_mask(mask, nb_components, stats, w, h)
 
-    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask, 8, cv2.CV_32S)
-    for i in range(nb_components):
-        if stats[i][2] < w-20 and stats[i][3] < h-20:
-            cv2.rectangle(image, (stats[i][0], stats[i][1]), (stats[i][0]+stats[i][2], stats[i][1]+stats[i][3]), color, 2)
+    dilated_mask = cv2.dilate(mask, np.ones((3, 3), np.uint8), iterations=2)
+
+    contours, hierarchy = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cv2.drawContours(image, contours, -1, (255, 0, 0), 3)
