@@ -5,6 +5,8 @@ from threading import Thread
 import time
 import win32gui
 
+
+
 class WindowCapture:
     def __init__(self, window_name, capture_rate):
         self.window_name = window_name
@@ -52,3 +54,29 @@ class WindowCapture:
             ))),
             cv2.COLOR_RGB2BGR
         )
+
+
+
+
+def single_screenshot():
+    hwnd = win32gui.FindWindow(None, "Unrailed!")
+    if not hwnd:
+        raise Exception("Window not found!")
+
+    l, t, r, d = win32gui.GetClientRect(hwnd)
+    x, y = win32gui.ClientToScreen(hwnd, (l, t))
+    if win32gui.GetForegroundWindow() != hwnd:
+        win32gui.SetForegroundWindow(hwnd)
+        time.sleep(0.1)
+
+    return cv2.cvtColor(
+            np.asarray(pyautogui.screenshot(region=(
+            x, y,
+            *win32gui.ClientToScreen(hwnd,(r-x, d-y))
+            ))),
+            cv2.COLOR_RGB2BGR
+        )
+
+def save_screenshot():
+    cv2.imwrite("../data/img_debug.png", single_screenshot())
+
