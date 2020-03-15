@@ -6,6 +6,9 @@ import axe
 import trees
 import screenshot as sc
 
+FRAME_RATE = 30
+SLEEP_TIME = 1 / FRAME_RATE
+
 while True:
 
     frame = cv2.cvtColor(np.asarray(sc.screenshot(":D")), cv2.COLOR_RGB2BGR)
@@ -14,7 +17,7 @@ while True:
 
     cv2.imshow("image", frame)
 
-    time.sleep(0.1)
+    time.sleep(SLEEP_TIME)
 
     k = cv2.waitKey(1) & 0xFF
     if k == 27:     # escape key

@@ -6,7 +6,6 @@ HSV_MIN_THRESH = np.array([43, 165, 101])
 HSV_MAX_THRESH = np.array([73, 176, 255])
 
 def _remove_grass_from_mask(mask, nb_components, stats, w, h):
-    print(w//53)
     for i in range(nb_components):
         if stats[i][2] < w//53:
             for y in range(stats[i][1], stats[i][1]+stats[i][3]+1):
