@@ -8,14 +8,18 @@ import debug
 
 ESC_KEY = 27
 
-FRAME_RATE = 30
+FRAME_RATE = 10
 SLEEP_TIME = 1 / FRAME_RATE
 
 
-#windowcapture.save_screenshot()
+debug.debug_save("../data/img_2.png")  
 
-capture = windowcapture.WindowCapture("Unrailed!", 10)
-capture.start()
+
+"""
+windowcapture.save_screenshot()
+
+capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE) # We create the object WindowCapture that can capture the "Unrailed!"
+capture.start() # Function in capture that start recording
 
 while True:
     frame = capture.read()
@@ -31,3 +35,4 @@ while True:
         break
 
 cv2.destroyAllWindows()
+"""
