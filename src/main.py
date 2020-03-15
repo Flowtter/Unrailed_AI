@@ -10,7 +10,7 @@ ESC_KEY = 27
 FRAME_RATE = 30
 SLEEP_TIME = 1 / FRAME_RATE
 
-capture = windowcapture.WindowCapture("main.py - Untitled (Workspace) - Visual Studio Code", 10)
+capture = windowcapture.WindowCapture("Unrailed!", 10)
 capture.start()
 
 while True:
