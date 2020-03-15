@@ -5,7 +5,7 @@ import sys
 
 # start = time.time()
 
-image = cv2.imread("..\data\img_2.png")
+image = cv2.imread("../data/" + sys.argv[1])
 image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 template = cv2.imread("../template.png", cv2.IMREAD_GRAYSCALE)
 
