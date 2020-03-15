@@ -6,8 +6,6 @@ def screenshot(window_title=None):
     if window_title:
         hwnd = win32gui.FindWindow(None, "Unrailed!")
         if hwnd:
-            win32gui.SetForegroundWindow(hwnd)
-            time.sleep(0.1)
             x, y, x1, y1 = win32gui.GetClientRect(hwnd)
             x, y = win32gui.ClientToScreen(hwnd, (x, y))
             x1, y1 = win32gui.ClientToScreen(hwnd, (x1 - x, y1 - y))
@@ -23,3 +21,10 @@ def show_screenshot():
     im = screenshot('Calculator')
     if im:
         im.show()
+
+def alt_tab():
+    pyautogui.keyDown('alt')
+    time.sleep(.2)
+    pyautogui.press('tab')
+    time.sleep(.2)
+    pyautogui.keyUp('alt')
