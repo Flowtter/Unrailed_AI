@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
-from capture import windowcapture
+import time
+import pyautogui
+import win32gui
+import imutils
 
 import axe
 import trees
@@ -10,24 +13,54 @@ import blackrock
 import river
 import the_map
 
-import time
-import pyautogui
-import win32gui
-
-
+from capture import windowcapture
+from show_map import game_map
 
 def debug_main():
     """function to replace the main to keep it clean"""
 
-    #save_screenshot()
     im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
+    im = rotate(im, -8)
+
+    mean_x, mean_y = detectplayer.draw_player(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    mean_x//=15
+    mean_y//=40
+
+    mean_x_axe, mean_y_axe = axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    mean_x_axe//=15
+    mean_y_axe//=40
+    
+
+
+    game = game_map(20,40,20,10) 
+    game.init_matrix()
+    game.draw_cell()
+    game.draw_axe(mean_x_axe, mean_y_axe)
+
+    game.draw_player(mean_y, mean_y)
+    im2 = game.draw_image()
+    
+    #show(im2)
+    show2(im, im2)
+
+
+    #show(game.draw_player(mean_x,mean_y), im)
+
+    #save_screenshot()
+    
     #debug_show(im)
     #print(convert_HSV(41))
     #print(get_pixel_color(im, 0, 0))
-    debug_show(im)
+    #debug_show(im)
     #debug_save(im)
 
 # functions that allow you to work on a single screenshot instead of on the game
+
+def rotate(image, angle):
+    image_center = tuple(np.array(image.shape[1::-1]) / 2)
+    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    return result
 
 def debug_show(im):
     """function that shows the image"""
@@ -46,7 +79,16 @@ def debug_show(im):
 
 def show(im):
     """function that shows the image without edit"""
-    cv2.imshow("im", im)
+    cv2.imshow("im1", im)
+    while True:
+        k = cv2.waitKey(1) & 0xFF
+        if k == 27:
+            break
+
+def show2(im, im2):
+    """function that shows the image without edit"""
+    cv2.imshow("im1", im2)
+    debug_show(im)
     while True:
         k = cv2.waitKey(1) & 0xFF
         if k == 27:
@@ -106,7 +148,7 @@ def set_pixel_color(im, x, y, color):
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
         raise Exception("get pixel: coordinate need to be positive!")
-    if x < rows and y < cols:
+    if x < cols and y < rows:
         im[y,x] = color
         return im
     raise Exception("get pixel: x and y out of range!")

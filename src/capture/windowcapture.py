@@ -31,7 +31,7 @@ class WindowCapture:
     # function update, replace self.frame by an image that has been screenshoted
 
     def update(self):
-        while True:
+        while not self.should_stop: # changed True by self...
             start = time.time()
 
             self.frame = self.screenshot()
@@ -49,7 +49,7 @@ class WindowCapture:
 
     def stop(self):
         self.should_stop = True
-        self._thread().join()
+        self._thread.join()
 
     # function that take the screenshot of the game, self.window_name
 

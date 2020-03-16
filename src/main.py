@@ -20,7 +20,7 @@ SLEEP_TIME = 1 / FRAME_RATE
 
 """Remove on last commit"""
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
     debug.debug_main()
@@ -35,6 +35,7 @@ while True:
     frame = capture.read()
 
     HSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
     the_map.draw_map_contours(frame, HSV)
     river.draw_river_contours(frame, HSV)
     blackrock.draw_blackrock_contours(frame, HSV)
@@ -52,4 +53,5 @@ while True:
     if k == ESC_KEY:
         break
 
+capture.stop() # maybe should delete that
 cv2.destroyAllWindows()

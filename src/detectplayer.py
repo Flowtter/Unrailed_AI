@@ -81,4 +81,19 @@ def draw_player(image, hsv_image, color=(0, 100, 255)):
     # get the contours then draw them
 
     contours, hierarchy = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    size = contours[0].size // 2 - 1
+    mean_x = 0
+    mean_y = 0
+
+    for i in range (size):
+        mean_x += contours[0][i][0][0]
+    
+    for i in range (size):
+        mean_y += contours[0][i][0][1]
+
+    mean_x //= size
+    mean_y //= size
+
     cv2.drawContours(image, contours, -1, color, 3)
+    return (mean_x, mean_y)

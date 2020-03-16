@@ -13,7 +13,14 @@ import numpy as np
 HSV_MIN_THRESH = np.array([15, 90, 100]) # Treshold values, colors 
 HSV_MAX_THRESH = np.array([15, 90, 200])
 
-
+def _remove_random_from_mask(mask, nb_components, stats, w, h):
+    """ algorithm that remove anything but rock"""
+    for i in range(nb_components):
+        if stats[i][2] < w//15:
+            for y in range(stats[i][1], stats[i][1]+stats[i][3]+1):
+                for x in range(stats[i][0], stats[i][0]+stats[i][2]+1):
+                    if y >= 0 and x >= 0 and y < h and x < w:
+                        mask[y][x] = 0
 
 def draw_rock_contours(image, hsv_image, color=(255, 0, 150)): 
     """Draws countours of rocks found in image"""
@@ -24,7 +31,7 @@ def draw_rock_contours(image, hsv_image, color=(255, 0, 150)):
     # get the locations of the rocks then remove the grass
 
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask, 8, cv2.CV_32S)
-
+    _remove_random_from_mask(mask, nb_components, stats, w, h)
 
     dilated_mask = cv2.dilate(mask, np.ones((3, 3), np.uint8), iterations=2)
 

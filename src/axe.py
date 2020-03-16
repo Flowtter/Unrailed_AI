@@ -21,6 +21,6 @@ def draw_axe_countours(image, image_gray, color=(255, 0, 255)):
     for point in zip(*get_axe_location(image_gray)[::-1]): # get the location of the axe, invert the list, draw each points
         if point[1] < int(csteMAX - point[0] / 7.3 ) :
             cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
-
+            return (point[0], point[1])
 
 
