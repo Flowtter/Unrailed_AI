@@ -14,11 +14,17 @@ def get_axe_location(image_gray):
     location = np.where(result >= 0.9)     # trust me that threshold is working
     return location
 
-def draw_contours(image, image_gray, color=(255, 0, 255)):
-    """Draws the contours of the axes found in image"""
-
+def get_contours(image, image_gray):
     cste_max = 500
     for point in zip(*get_axe_location(image_gray)[::-1]): # get the location of the axe, invert the list, draw each points
         if point[1] < int(cste_max - point[0] / 7.3):
-            cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
-            break
+            return point
+
+def draw_contours(image, image_gray, color=(0, 255, 0)):
+    point = get_contours(image, image_gray)
+    cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
+
+def draw_and_return_contours(image, image_gray, color=(0, 255, 0)):
+    point = get_contours(image, image_gray)
+    cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
+    return point

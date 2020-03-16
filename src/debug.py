@@ -5,13 +5,8 @@ import pyautogui
 import win32gui
 import imutils
 
-import axe
-import trees
-import detectplayer
-import rock
-import blackrock
-import river
-import the_map
+from detection import axe, trees, player, rock, blackrock, river, terrain
+
 
 from capture import windowcapture
 from show_map import game_map
@@ -19,14 +14,14 @@ from show_map import game_map
 def debug_main():
     """function to replace the main to keep it clean"""
 
-    im = cv2.imread("../data/img_debug.png", cv2.COLOR_RGB2BGR)
+    im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
     im = rotate(im, -8)
 
-    mean_x, mean_y = detectplayer.draw_player(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    mean_x, mean_y = player.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     mean_x//=15
     mean_y//=40
 
-    mean_x_axe, mean_y_axe = axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    mean_x_axe, mean_y_axe = axe.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     mean_x_axe//=15
     mean_y_axe//=40
 
@@ -35,6 +30,7 @@ def debug_main():
     game = game_map(20,40,20,10) 
     game.init_matrix()
     game.draw_cell()
+
     game.draw_axe(mean_x_axe, mean_y_axe)
 
     game.draw_player(mean_y, mean_y)
@@ -42,7 +38,6 @@ def debug_main():
 
     #show(im2)
     show2(im, im2)
-
 
     #show(game.draw_player(mean_x,mean_y), im)
 
@@ -64,13 +59,15 @@ def rotate(image, angle):
 
 def debug_show(im):
     """function that shows the image"""
-    the_map.draw_map_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    river.draw_river_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    blackrock.draw_blackrock_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    rock.draw_rock_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    trees.draw_trees_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    detectplayer.draw_player(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    hsv_frame = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
+    terrain.draw_contours(im, hsv_frame)
+    river.draw_contours(im, hsv_frame)
+    blackrock.draw_contours(im, hsv_frame)
+    rock.draw_contours(im, hsv_frame)
+    trees.draw_contours(im, hsv_frame)
+    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    player.draw_contours(im, hsv_frame)
     cv2.imshow("im", im)
     while True:
         k = cv2.waitKey(1) & 0xFF
@@ -96,13 +93,15 @@ def show2(im, im2):
 
 def debug_save(im):
     """function that saves the image"""
-    the_map.draw_map_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    river.draw_river_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    blackrock.draw_blackrock_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    rock.draw_rock_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    trees.draw_trees_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    detectplayer.draw_player(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    hsv_frame = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
+    terrain.draw_contours(im, hsv_frame)
+    river.draw_contours(im, hsv_frame)
+    blackrock.draw_contours(im, hsv_frame)
+    rock.draw_contours(im, hsv_frame)
+    trees.draw_contours(im, hsv_frame)
+    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    player.draw_contours(im, hsv_frame)
     cv2.imwrite("../data/img_masked.png", im)
 
 def single_screenshot():
@@ -127,7 +126,7 @@ def single_screenshot():
 
 def save_screenshot():
     """function that take a single screnshot of the game and save it"""
-    cv2.imwrite("../data/img_debug.png", single_screenshot())
+    cv2.imwrite("../test_data/img_debug.png", single_screenshot())
 
 
 # functions to work on the image in BGR
