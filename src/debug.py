@@ -29,7 +29,7 @@ def debug_main():
     mean_x_axe, mean_y_axe = axe.draw_axe_countours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     mean_x_axe//=15
     mean_y_axe//=40
-    
+
 
 
     game = game_map(20,40,20,10) 
@@ -39,7 +39,7 @@ def debug_main():
 
     game.draw_player(mean_y, mean_y)
     im2 = game.draw_image()
-    
+
     #show(im2)
     show2(im, im2)
 
@@ -47,7 +47,7 @@ def debug_main():
     #show(game.draw_player(mean_x,mean_y), im)
 
     #save_screenshot()
-    
+
     #debug_show(im)
     #print(convert_HSV(41))
     #print(get_pixel_color(im, 0, 0))
@@ -124,7 +124,7 @@ def single_screenshot():
             ))),
             cv2.COLOR_RGB2BGR
         )
-        
+
 def save_screenshot():
     """function that take a single screnshot of the game and save it"""
     cv2.imwrite("../data/img_debug.png", single_screenshot())

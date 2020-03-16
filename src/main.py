@@ -1,14 +1,7 @@
 import cv2
 import numpy as np
 from capture import windowcapture
-
-import axe
-import trees
-import detectplayer
-import rock
-import blackrock
-import river
-import the_map
+from detection import axe, trees, player, rock, blackrock, river, terrain
 
 import time
 import debug
@@ -26,32 +19,31 @@ if DEBUG:
     debug.debug_main()
     exit()
 
-
-
-capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE) # We create the object WindowCapture that can capture the "Unrailed!"
-capture.start() # Function in capture that start recording
+capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE)
+capture.start()
 
 while True:
+    start = time.time()
     frame = capture.read()
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    HSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    the_map.draw_map_contours(frame, HSV)
-    river.draw_river_contours(frame, HSV)
-    blackrock.draw_blackrock_contours(frame, HSV)
-    rock.draw_rock_contours(frame, HSV)
-    trees.draw_trees_contours(frame, HSV)
-    axe.draw_axe_countours(frame, cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
-    detectplayer.draw_player(frame, HSV)
-
+    terrain.draw_contours(frame, hsv_frame)
+    river.draw_contours(frame, hsv_frame)
+    blackrock.draw_contours(frame, hsv_frame)
+    rock.draw_contours(frame, hsv_frame)
+    trees.draw_contours(frame, hsv_frame)
+    axe.draw_contours(frame, cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+    player.draw_contours(frame, hsv_frame)
 
     cv2.imshow("frame", frame)
 
-    time.sleep(SLEEP_TIME)
+    delta = time.time() - start
+    if delta < SLEEP_TIME:
+        time.sleep(SLEEP_TIME - delta)
 
-    k = cv2.waitKey(1) & 0xFF
-    if k == ESC_KEY:
+    key = cv2.waitKey(1) & 0xFF
+    if key == ESC_KEY:
         break
 
-capture.stop() # maybe should delete that
+capture.stop()
 cv2.destroyAllWindows()

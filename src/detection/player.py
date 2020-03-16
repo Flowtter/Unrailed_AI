@@ -37,63 +37,62 @@ HSV_MAX_THRESH = np.array([10, 210, 255])
 
 
 # magic values for the player
-HSV_MIN_THRESH_BLUE = np.array([81, 146, 119]) # Treshold values, colors in HSV
+HSV_MIN_THRESH_BLUE = np.array([81, 146, 119])
 HSV_MAX_THRESH_BLUE = np.array([83, 148, 121])
 
-HSV_MIN_THRESH_RED = np.array([0, 190, 140]) # Treshold values, colors in HSV
+HSV_MIN_THRESH_RED = np.array([0, 190, 140])
 HSV_MAX_THRESH_RED = np.array([10, 210, 255])
 
 
 
-def _remove_train_station_from_mask(mask, nb_components, stats, w, h):
+def _remove_train_station_from_bin_image(bin_image, nb_components, stats, w, h):
     """ algorithm that remove the grass"""
+
     for i in range(nb_components):
         if stats[i][3] < w//100:
             for y in range(stats[i][1], stats[i][1]+stats[i][3]+1):
                 for x in range(stats[i][0], stats[i][0]+stats[i][2]+1):
                     if y >= 0 and x >= 0 and y < h and x < w:
-                        mask[y][x] = 0
+                        bin_image[y][x] = 0
 
 
-def draw_player(image, hsv_image, color=(0, 100, 255)): 
-    """Draws countours of the player found in image"""
+def draw_contours(image, hsv_image, color=(0, 100, 255)):
+    """Draws contours of the player found in image"""
 
     h, w = image.shape[:-1] # remove last value because we don't need the channels
-    mask = cv2.inRange(hsv_image, HSV_MIN_THRESH_BLUE, HSV_MAX_THRESH_BLUE) # create the mask with the treshold values on the hsv image and not BGR
-    
+    bin_image = cv2.inRange(hsv_image, HSV_MIN_THRESH_BLUE, HSV_MAX_THRESH_BLUE) # create the bin_image with the treshold values on the hsv image and not BGR
 
-    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(mask, 8, cv2.CV_32S)
-    _remove_train_station_from_mask(mask, nb_components, stats, w, h)
-    
-    
-    mask2= cv2.inRange(hsv_image, HSV_MIN_THRESH_RED, HSV_MAX_THRESH_RED) # create the mask with the treshold values on the hsv image and not BGR
+
+    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(bin_image, 8, cv2.CV_32S)
+    _remove_train_station_from_bin_image(bin_image, nb_components, stats, w, h)
+
+
+    bin_image2= cv2.inRange(hsv_image, HSV_MIN_THRESH_RED, HSV_MAX_THRESH_RED) # create the bin_image with the treshold values on the hsv image and not BGR
 
 
     # get the locations of the player then remove the train station
 
 
+    # add both bin_image
 
-    # add both mask
+    bin_image += bin_image2
+    dilated_bin_image = cv2.dilate(bin_image, np.ones((3, 3), np.uint8), iterations=2)
 
-    mask += mask2
-    dilated_mask = cv2.dilate(mask, np.ones((3, 3), np.uint8), iterations=2)
+    contours, hierarchy = cv2.findContours(dilated_bin_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    # get the contours then draw them
+    if len(contours) > 0:
+        size = contours[0].size // 2 - 1
+        mean_x = 0
+        mean_y = 0
 
-    contours, hierarchy = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        for i in range (size):
+            mean_x += contours[0][i][0][0]
 
-    size = contours[0].size // 2 - 1
-    mean_x = 0
-    mean_y = 0
+        for i in range (size):
+            mean_y += contours[0][i][0][1]
 
-    for i in range (size):
-        mean_x += contours[0][i][0][0]
-    
-    for i in range (size):
-        mean_y += contours[0][i][0][1]
+        mean_x //= size
+        mean_y //= size
 
-    mean_x //= size
-    mean_y //= size
-
-    cv2.drawContours(image, contours, -1, color, 3)
-    return (mean_x, mean_y)
+        cv2.drawContours(image, contours, -1, color, 3)
+        return (mean_x, mean_y) # BAD BAD :/
