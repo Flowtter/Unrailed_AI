@@ -15,29 +15,69 @@ def debug_main():
     """function to replace the main to keep it clean"""
 
     im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
-    im = rotate(im, -8)
+    im = rotate(im, -7)
+    x, y = 0, 115
+    h, w = 330, 800
+    im = im[y:y+h, x:x+w]
+
+    rows,cols,ch = im.shape
+
+
+    a , b , c = [382,52],[500,50],[400,200]  # dst
+    offsetx = 24
+    d, e, f = [382 + offsetx ,52],[500 + offsetx,50],[400 ,200]
+
+    pts1 = np.float32([a, b, c])
+    pts2 = np.float32([d, e, f])
+
+    dst = im
+
+    M = cv2.getAffineTransform(pts1,pts2)
+    dst = cv2.warpAffine(im,M,(cols,rows))
+    im = dst
+
+
+    #dst = set_area_color(dst, a[0], a[1], (0, 0, 255), 10)
+    #dst = set_area_color(dst, b[0], b[1], (0, 0, 255), 10)
+    #dst = set_area_color(dst, c[0], c[1], (0, 0, 255), 10)
+    #im = set_area_color(im, d[0], d[1], (0, 255, 0), 10)
+    #im = set_area_color(im, e[0], e[1], (0, 255, 0), 10)
+    #im = set_area_color(im, f[0], f[1], (0, 255, 0), 10)
+
+
+
 
     mean_x, mean_y = player.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    mean_x//=15
-    mean_y//=40
+    print("player")
+    print(str(mean_x) + " " + str(mean_y))
+    mean_x//=24
+    mean_y//=16
 
-    mean_x_axe, mean_y_axe = axe.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    mean_x_axe//=15
-    mean_y_axe//=40
+    print(str(mean_x) + " " + str(mean_y))
+
+    #mean_x_axe, mean_y_axe = axe.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))    
+    #print("axe")
+    #print(str(mean_x_axe) + " " + str(mean_y_axe))
+    #mean_y_axe += 20  # Offset because axe is under the thumbnail
+    #mean_x_axe += 50  # Offset because axe is under the thumbnail
+    #mean_x_axe//=40
+    #mean_y_axe//=15
+    #
+    #print(str(mean_x_axe) + " " + str(mean_y_axe))
 
 
-
-    game = game_map(20,40,20,10) 
+    game = game_map(20,35,23,10)  # (self, height, width, cell_size, refresh_rate):
     game.init_matrix()
     game.draw_cell()
 
-    game.draw_axe(mean_x_axe, mean_y_axe)
+    #game.draw_axe(mean_x_axe, mean_y_axe)
 
-    game.draw_player(mean_y, mean_y)
+    game.draw_player(mean_x, mean_y)
     im2 = game.draw_image()
 
-    #show(im2)
-    show2(im, im2)
+
+
+    show2(dst, im2)
 
     #show(game.draw_player(mean_x,mean_y), im)
 
@@ -51,6 +91,24 @@ def debug_main():
 
 # functions that allow you to work on a single screenshot instead of on the game
 
+def grid(dst):
+    tiny_offset = 0
+    
+    for x in range (0, 820):
+        if x % (23)  == 0:
+            tiny_offset += 0.8
+            for y in range (0, 330):
+                l = int(tiny_offset)
+                dst = set_pixel_color(dst,  x - l + 3, y, (100,0,100))
+    tiny_offset = 0
+
+    for y in range (0, 350):
+        if y % (19)  == 0:
+            tiny_offset += 1.2
+            for x in range (0, 750):
+                l = int(tiny_offset)
+                dst = set_pixel_color(dst,  x , y - l + 0, (100,0,100))
+
 def rotate(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
@@ -61,13 +119,14 @@ def debug_show(im):
     """function that shows the image"""
     hsv_frame = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
-    terrain.draw_contours(im, hsv_frame)
+    #terrain.draw_contours(im, hsv_frame)
     river.draw_contours(im, hsv_frame)
     blackrock.draw_contours(im, hsv_frame)
     rock.draw_contours(im, hsv_frame)
     trees.draw_contours(im, hsv_frame)
-    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    #axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     player.draw_contours(im, hsv_frame)
+    grid(im)
     cv2.imshow("im", im)
     while True:
         k = cv2.waitKey(1) & 0xFF
@@ -84,12 +143,8 @@ def show(im):
 
 def show2(im, im2):
     """function that shows the image without edit"""
-    cv2.imshow("im1", im2)
+    cv2.imshow("dst", im2)
     debug_show(im)
-    while True:
-        k = cv2.waitKey(1) & 0xFF
-        if k == 27:
-            break
 
 def debug_save(im):
     """function that saves the image"""
@@ -102,7 +157,7 @@ def debug_save(im):
     trees.draw_contours(im, hsv_frame)
     axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     player.draw_contours(im, hsv_frame)
-    cv2.imwrite("../data/img_masked.png", im)
+    cv2.imwrite("../test_data/img_masked2.png", im)
 
 def single_screenshot():
     """function that take a single screnshot of the game to work on it"""

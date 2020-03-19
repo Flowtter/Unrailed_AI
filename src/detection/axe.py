@@ -20,11 +20,11 @@ def get_contours(image, image_gray):
         if point[1] < int(cste_max - point[0] / 7.3):
             return point
 
-def draw_contours(image, image_gray, color=(0, 255, 0)):
+def draw_contours(image, image_gray, color=(255, 0, 255)):
     point = get_contours(image, image_gray)
     cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
 
-def draw_and_return_contours(image, image_gray, color=(0, 255, 0)):
+def draw_and_return_contours(image, image_gray, color=(255, 0, 255)):
     point = get_contours(image, image_gray)
     cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
     return point

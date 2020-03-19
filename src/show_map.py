@@ -10,9 +10,10 @@ class game_map:
     # function init to declare variables
 
     def __init__(self, height, width, cell_size, refresh_rate):
-        self.height = height
+        self.height = height - 6
         self.width  = width
         self.cell_size = cell_size
+        self.cell_size_y = cell_size - 5
 
         self.wait_time = 1/refresh_rate
 
@@ -66,18 +67,18 @@ class game_map:
 
         for y in range (0,size_y ):
             for x in range (0, size_x ):
-                if x % self.cell_size == 0 or y % self.cell_size == 0:
+                if x % self.cell_size == 0 or y % self.cell_size_y == 0:
                     debug.set_pixel_color(self.im, x, y, (0,255,0))
                 else:
                     debug.set_pixel_color(self.im, x, y, (100,100,100))
 
     def draw_player(self, i, j):
-        for y in range (1, self.cell_size):
+        for y in range (1, self.cell_size_y):
             for x in range (1, self.cell_size):
-                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size, (0, 100, 255))
+                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (0, 100, 255))
 
     def draw_axe(self, i, j):
-        for y in range (1, self.cell_size):
+        for y in range (1, self.cell_size_y):
             for x in range (1, self.cell_size):
                 debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size, (255, 0, 255))
 
