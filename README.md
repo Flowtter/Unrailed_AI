@@ -12,7 +12,7 @@ We decided to make a bot to play the game with an AI.
 
 ![](assets/demo.gif)
 
-![](assets/capture.PNG)
+![](assets/Capture.PNG)
 
 ## Get started
 
