@@ -5,7 +5,7 @@ import pyautogui
 import win32gui
 import imutils
 
-from detection import axe, trees, player, rock, blackrock, river, terrain
+from detection import axe, trees, player, rock, blackrock, river, terrain, green
 
 
 from capture import windowcapture
@@ -14,133 +14,168 @@ from show_map import game_map
 def debug_main():
     """function to replace the main to keep it clean"""
 
+    #im = single_screenshot()
+
     im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
-    im3 = im
-    im = rotate(im, -7)
+    im, im2 = do_map(im)
+
+    show2([im, im2])
+
+
+def do_map(im):
+    im = rotate(im, -8.5)
     x, y = 0, 115
     h, w = 330, 800
     im = im[y:y+h, x:x+w]
-    im3 = im3[y:y+h, x:x+w]
 
-    rows,cols,ch = im.shape
+    rows,cols = im.shape[:-1]
 
 
-    a , b , c = [382,52],[500,50],[400,200]  # dst
+    a , b , c = [382,52],[500,50],[400,200]
     offsetx = 24
     d, e, f = [382 + offsetx ,52],[500 + offsetx,50],[400 ,200]
 
     pts1 = np.float32([a, b, c])
     pts2 = np.float32([d, e, f])
 
-    dst = im
+    dst = im #  Uh Oh
 
     M = cv2.getAffineTransform(pts1,pts2)
     dst = cv2.warpAffine(im,M,(cols,rows))
+
     im = dst
 
+    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
 
-    #dst = set_area_color(dst, a[0], a[1], (0, 0, 255), 10)
-    #dst = set_area_color(dst, b[0], b[1], (0, 0, 255), 10)
-    #dst = set_area_color(dst, c[0], c[1], (0, 0, 255), 10)
-    #im = set_area_color(im, d[0], d[1], (0, 255, 0), 10)
-    #im = set_area_color(im, e[0], e[1], (0, 255, 0), 10)
-    #im = set_area_color(im, f[0], f[1], (0, 255, 0), 10)
-
-
-
+    bin_green = green.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
 
     mean_x, mean_y = player.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    print("player")
-    print(str(mean_x) + " " + str(mean_y))
-    mean_x//=24
-    mean_y//=17
 
-    print(str(mean_x) + " " + str(mean_y))
-
-    #mean_x_axe, mean_y_axe = axe.draw_and_return_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))    
-    #print("axe")
-    #print(str(mean_x_axe) + " " + str(mean_y_axe))
-    #mean_y_axe += 20  # Offset because axe is under the thumbnail
-    #mean_x_axe += 50  # Offset because axe is under the thumbnail
-    #mean_x_axe//=40
-    #mean_y_axe//=15
-    #
-    #print(str(mean_x_axe) + " " + str(mean_y_axe))
+    mean_x//=23
+    mean_y//=18
 
     bin_trees = trees.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    bin_rocks = rock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    bin_black = blackrock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    bin_river = river.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+    bin_terrain = terrain.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
 
+    mega_bin = bin_green + bin_trees + bin_rocks + bin_black + bin_river + bin_terrain
 
-
+    x, y = mega_bin.shape[:-1]
 
     game = game_map(20,35,23,10)  # (self, height, width, cell_size, refresh_rate):
     game.init_matrix()
     game.draw_cell()
 
-    game.draw_player(mean_x, mean_y)
-    element(game, bin_trees, bin_trees)
+
+    arrtree = element(game, bin_trees, bin_trees, 6)
+    arrrock = element(game, bin_rocks, bin_rocks, 3)
+    arrblack = element(game, bin_black, bin_black, 5)
+    arrriver = element(game, bin_river, bin_river, 3)
+    arrmain = element(game, bin_green, bin_green, 3)
+
+    arrout = element(game, bin_terrain, bin_terrain, 4)
+
+    for e in arrmain:
+        game.draw_main(e[0], e[1])
+
+    for e in arrtree:
+        game.draw_tree(e[0], e[1])
+
+    for e in arrrock:
+        game.draw_rock(e[0], e[1])
+
+    for e in arrblack:
+        game.draw_black(e[0], e[1])
+
+    for e in arrriver:
+        game.draw_river(e[0], e[1])
+    
+
+
+
+    for e in arrout:
+        game.draw_out(e[0], e[1])
+    for i in range (2):
+        for j in range (20):
+            game.draw_out(i, j)
+    for j in range (20):
+            game.draw_out(34, j)
+
+
 
     im2 = game.draw_image()
 
 
+    game.draw_player(mean_x, mean_y)
 
-    show2([im, im2, bin_trees, im3])
+    return im, im2
 
 
-def element(game, bin, im):
+
+def element(game, bin, im, nb):
     tiny_offset = 0
-    for x in range (11, 790):
-        for y in range (0, 310):
-            if x % (22)  == 0 and y % (18)  == 0 :
+    result = []
+    for x in range (0, 790, 22):
+        for y in range (0, 322, 18):
                 l = int(tiny_offset)
-                arr = get_pixel_color(bin, x-2, y+2)
-                arr1 = get_pixel_color(bin, x-10, y+4)
-                arr2 = get_pixel_color(bin, x+2, y+6)
+                arr = get_pixel_color(bin, x-12 - l , y)
+                arr1 = get_pixel_color(bin, x-5 - l , y)
+                arr2 = get_pixel_color(bin, x+2 - l , y)
                 
-                arr3 = get_pixel_color(bin, x-2, y+12)
-                arr4 = get_pixel_color(bin, x-10, y+10)
-                arr5 = get_pixel_color(bin, x+2, y+10)
+                arr3 = get_pixel_color(bin, x-12 - l , y+12)
+                arr4 = get_pixel_color(bin, x-5 - l , y+12)
+                arr5 = get_pixel_color(bin, x+2 - l , y+12)
 
-                arrE = [arr, arr1, arr2, arr3, arr4, arr5]
+                arr6 = get_pixel_color(bin, x-12 - l , y+7)
+                arr7 = get_pixel_color(bin, x-5 - l , y+7)
+                arr8 = get_pixel_color(bin, x+2 - l , y+7)
+
+                arrE = [arr, arr1, arr2, arr3, arr4, arr5, arr6, arr7, arr8]
                 somme = 0
                 for i in range (len(arrE)):
                     somme += (arrE[i][0] != 0 and arrE[i][1] != 0 and arrE[i][2] != 0)
-                if somme >= 3: # !=
-                    game.draw_tree(x//24, y//17)
-                
-                im = set_area_color(im, x - 12 - l, y + 2, (0,0,255), 2)
-                im = set_area_color(im, x - 5 - l, y + 2, (0,255,255), 2)
-                im = set_area_color(im, x + 2 - l, y + 2, (255,0,255), 2)
-                
-                im = set_area_color(im, x - 12 - l, y + 12, (0,0,255), 2)
-                im = set_area_color(im, x - 5 - l, y + 12, (0,255,255), 2)
-                im = set_area_color(im, x + 2 - l, y + 12, (255,0,255), 2)
-    
+                if somme >= nb: # !=
+                    result.append([x//23, y//18])
     grid(im)
+    return result
 
 
 def grid(im):
     tiny_offset = 0
     
-    for x in range (0, 820):
-        if x % (23)  == 0:
+    for x in range (0, 820, 23):
             tiny_offset += 0.8
             for y in range (0, 330):
                 l = int(tiny_offset)
                 im = set_pixel_color(im,  x - l + 3, y, (100,0,100))
     tiny_offset = 0
 
-    for y in range (0, 350):
-        if y % (19)  == 0:
+    for y in range (0, 350, 19):
             tiny_offset += 1.2
             for x in range (0, 750):
                 l = int(tiny_offset)
                 im = set_pixel_color(im,  x , y - l + 0, (100,0,100))
 
 def dot(im):
-    for y in range (10, 320):
-        for x in range (10, 800):
-            if x % (22)  == 0 and y % (18)  == 0 :
-                im = set_area_color(im, x - 5, y + 5, (0,0,0), 5)
+    tiny_offset = 0
+    for x in range (0, 790, 22):
+        for y in range (0, 322, 18):
+                l = int(tiny_offset)
+                
+                im = set_area_color(im, x - 12 - l, y , (0,0,255), 2)
+                im = set_area_color(im, x - 5 - l, y , (0,255,255), 2)
+                im = set_area_color(im, x + 2 - l, y , (255,0,255), 2)
+                
+                im = set_area_color(im, x - 12 - l, y + 12, (0,0,255), 2)
+                im = set_area_color(im, x - 5 - l, y + 12, (0,255,255), 2)
+                im = set_area_color(im, x + 2 - l, y + 12, (255,0,255), 2)
+
+                im = set_area_color(im, x - 12 - l, y + 6, (0,0,255), 2)
+                im = set_area_color(im, x - 5 - l, y + 6, (0,255,255), 2)
+                im = set_area_color(im, x + 2 - l, y + 6, (255,0,255), 2)
+
 
 def rotate(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
@@ -177,9 +212,6 @@ def show(im):
 
 def show2(ims):
     """function that shows the images without edit"""
-
-    grid(ims[0])
-    #dot(ims[0])
     for i in range (len(ims)):
         cv2.imshow("im_" + str(i) , ims[i])
     while True:

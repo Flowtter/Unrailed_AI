@@ -40,8 +40,8 @@ HSV_MAX_THRESH = np.array([10, 210, 255])
 HSV_MIN_THRESH_BLUE = np.array([81, 146, 119])
 HSV_MAX_THRESH_BLUE = np.array([83, 148, 121])
 
-HSV_MIN_THRESH_RED = np.array([0, 190, 140])
-HSV_MAX_THRESH_RED = np.array([10, 210, 255])
+HSV_MIN_THRESH_RED = np.array([2, 190, 140])
+HSV_MAX_THRESH_RED = np.array([4, 210, 255])
 
 
 
@@ -83,6 +83,7 @@ def draw_contours(image, hsv_image, color=(0, 100, 255)):
 def draw_and_return_contours(image, hsv_image, color=(0, 100, 255)):
     """Draws contours of the player found in image and return the contours"""
 
+
     h, w = image.shape[:-1] # remove last value because we don't need the channels
     bin_image = cv2.inRange(hsv_image, HSV_MIN_THRESH_BLUE, HSV_MAX_THRESH_BLUE) # create the bin_image with the treshold values on the hsv image and not BGR
 
@@ -119,4 +120,6 @@ def draw_and_return_contours(image, hsv_image, color=(0, 100, 255)):
         mean_y //= size
 
         cv2.drawContours(image, contours, -1, color, 3)
+ 
         return (mean_x, mean_y) # BAD BAD :/
+    return (0, 0) # BAD BAD :/

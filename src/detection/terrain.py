@@ -3,9 +3,9 @@ import numpy as np
 
 # magic values for the map
 HSV_MIN_THRESH = np.array([0, 0, 65])
-HSV_MAX_THRESH = np.array([120, 255, 255])
+HSV_MAX_THRESH = np.array([180, 255, 255])
 
-def _remove_river_from_bin_image(bin_image, nb_components, stats, w, h):
+def _remove_all_from_bin_image(bin_image, nb_components, stats, w, h):
     """Sets everything but terrain to 0 in binary image"""
 
     for i in range(nb_components):
@@ -15,7 +15,7 @@ def _remove_river_from_bin_image(bin_image, nb_components, stats, w, h):
                     if y >= 0 and x >= 0 and y < h and x < w:
                         bin_image[y][x] = 0
 
-def draw_contours(image, hsv_image, color=(0, 0, 0)):
+def draw_contours_return_bin(image, hsv_image, color=(0, 0, 0)):
     """Draws contours of the terrain found in image"""
 
     h, w = image.shape[:-1] # remove last value because we don't need the channels
@@ -24,9 +24,16 @@ def draw_contours(image, hsv_image, color=(0, 0, 0)):
     # get the locations of the river then remove the grass
 
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(bin_image, 8, cv2.CV_32S)
-    _remove_river_from_bin_image(bin_image, nb_components, stats, w, h)
+    _remove_all_from_bin_image(bin_image, nb_components, stats, w, h)
 
     dilated_bin_image = cv2.dilate(bin_image, np.ones((3, 3), np.uint8), iterations=2)
 
+    
+    dilated_bin_image = cv2.bitwise_not(dilated_bin_image, dilated_bin_image)
+
+    result = cv2.bitwise_and(image, image, mask=dilated_bin_image)
+
+
     contours, hierarchy = cv2.findContours(dilated_bin_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(image, contours, -1, color, 3)
+    return result

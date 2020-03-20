@@ -70,7 +70,7 @@ class game_map:
                 if x % self.cell_size == 0 or y % self.cell_size_y == 0:
                     debug.set_pixel_color(self.im, x, y, (0,255,0))
                 else:
-                    debug.set_pixel_color(self.im, x, y, (100,100,100))
+                    debug.set_pixel_color(self.im, x, y, (155,0,155))
 
     def draw_player(self, i, j):
         for y in range (1, self.cell_size_y):
@@ -85,8 +85,32 @@ class game_map:
     def draw_tree(self, i, j):
         for y in range (1, self.cell_size_y):
             for x in range (1, self.cell_size):
-                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (255, 0, 0))
+                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (109, 196, 63))
 
+    def draw_rock(self, i, j):
+            for y in range (1, self.cell_size_y):
+                for x in range (1, self.cell_size):
+                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (118, 150, 182))
+
+    def draw_black(self, i, j):
+            for y in range (1, self.cell_size_y):
+                for x in range (1, self.cell_size):
+                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (65, 65, 65))
+
+    def draw_river(self, i, j):
+            for y in range (1, self.cell_size_y):
+                for x in range (1, self.cell_size):
+                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (243, 255, 114))
+
+    def draw_main(self, i, j):
+            for y in range (1, self.cell_size_y):
+                for x in range (1, self.cell_size):
+                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (86, 215, 156))
+
+    def draw_out(self, i, j):
+            for y in range (1, self.cell_size_y):
+                for x in range (1, self.cell_size):
+                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (0, 0, 0))
 
     def draw_image(self):
         return self.im

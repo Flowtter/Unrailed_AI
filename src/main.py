@@ -27,15 +27,18 @@ while True:
     frame = capture.read()
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    terrain.draw_contours(frame, hsv_frame)
-    river.draw_contours(frame, hsv_frame)
-    blackrock.draw_contours(frame, hsv_frame)
-    rock.draw_contours(frame, hsv_frame)
-    trees.draw_contours(frame, hsv_frame)
-    axe.draw_contours(frame, cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
-    player.draw_contours(frame, hsv_frame)
+    frame1, frame2 = debug.do_map(frame)
 
-    cv2.imshow("frame", frame)
+    #terrain.draw_contours(frame, hsv_frame)
+    #river.draw_contours(frame, hsv_frame)
+    #blackrock.draw_contours(frame, hsv_frame)
+    #rock.draw_contours(frame, hsv_frame)
+    #trees.draw_contours(frame, hsv_frame)
+    #axe.draw_contours(frame, cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+    #player.draw_contours(frame, hsv_frame)
+#
+    cv2.imshow("frame1", frame1)
+    cv2.imshow("frame2", frame2)
 
     delta = time.time() - start
     if delta < SLEEP_TIME:
