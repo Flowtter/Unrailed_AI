@@ -11,7 +11,7 @@ We decided to make a bot to play the game with an AI.
 ## Pictures
 
 ![](assets/demo.gif)
-
+![](assets/Dot.PNG)
 
 ## Get started
 

@@ -15,10 +15,12 @@ def debug_main():
     """function to replace the main to keep it clean"""
 
     im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
+    im3 = im
     im = rotate(im, -7)
     x, y = 0, 115
     h, w = 330, 800
     im = im[y:y+h, x:x+w]
+    im3 = im3[y:y+h, x:x+w]
 
     rows,cols,ch = im.shape
 
@@ -51,7 +53,7 @@ def debug_main():
     print("player")
     print(str(mean_x) + " " + str(mean_y))
     mean_x//=24
-    mean_y//=16
+    mean_y//=17
 
     print(str(mean_x) + " " + str(mean_y))
 
@@ -65,33 +67,58 @@ def debug_main():
     #
     #print(str(mean_x_axe) + " " + str(mean_y_axe))
 
+    bin_trees = trees.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+
+
+
 
     game = game_map(20,35,23,10)  # (self, height, width, cell_size, refresh_rate):
     game.init_matrix()
     game.draw_cell()
 
-    #game.draw_axe(mean_x_axe, mean_y_axe)
-
     game.draw_player(mean_x, mean_y)
+    element(game, bin_trees, bin_trees)
+
     im2 = game.draw_image()
 
 
 
-    show2(dst, im2)
+    show2([im, im2, bin_trees, im3])
 
-    #show(game.draw_player(mean_x,mean_y), im)
 
-    #save_screenshot()
+def element(game, bin, im):
+    tiny_offset = 0
+    for x in range (11, 790):
+        for y in range (0, 310):
+            if x % (22)  == 0 and y % (18)  == 0 :
+                l = int(tiny_offset)
+                arr = get_pixel_color(bin, x-2, y+2)
+                arr1 = get_pixel_color(bin, x-10, y+4)
+                arr2 = get_pixel_color(bin, x+2, y+6)
+                
+                arr3 = get_pixel_color(bin, x-2, y+12)
+                arr4 = get_pixel_color(bin, x-10, y+10)
+                arr5 = get_pixel_color(bin, x+2, y+10)
 
-    #debug_show(im)
-    #print(convert_HSV(41))
-    #print(get_pixel_color(im, 0, 0))
-    #debug_show(im)
-    #debug_save(im)
+                arrE = [arr, arr1, arr2, arr3, arr4, arr5]
+                somme = 0
+                for i in range (len(arrE)):
+                    somme += (arrE[i][0] != 0 and arrE[i][1] != 0 and arrE[i][2] != 0)
+                if somme >= 3: # !=
+                    game.draw_tree(x//24, y//17)
+                
+                im = set_area_color(im, x - 12 - l, y + 2, (0,0,255), 2)
+                im = set_area_color(im, x - 5 - l, y + 2, (0,255,255), 2)
+                im = set_area_color(im, x + 2 - l, y + 2, (255,0,255), 2)
+                
+                im = set_area_color(im, x - 12 - l, y + 12, (0,0,255), 2)
+                im = set_area_color(im, x - 5 - l, y + 12, (0,255,255), 2)
+                im = set_area_color(im, x + 2 - l, y + 12, (255,0,255), 2)
+    
+    grid(im)
 
-# functions that allow you to work on a single screenshot instead of on the game
 
-def grid(dst):
+def grid(im):
     tiny_offset = 0
     
     for x in range (0, 820):
@@ -99,7 +126,7 @@ def grid(dst):
             tiny_offset += 0.8
             for y in range (0, 330):
                 l = int(tiny_offset)
-                dst = set_pixel_color(dst,  x - l + 3, y, (100,0,100))
+                im = set_pixel_color(im,  x - l + 3, y, (100,0,100))
     tiny_offset = 0
 
     for y in range (0, 350):
@@ -107,13 +134,21 @@ def grid(dst):
             tiny_offset += 1.2
             for x in range (0, 750):
                 l = int(tiny_offset)
-                dst = set_pixel_color(dst,  x , y - l + 0, (100,0,100))
+                im = set_pixel_color(im,  x , y - l + 0, (100,0,100))
+
+def dot(im):
+    for y in range (10, 320):
+        for x in range (10, 800):
+            if x % (22)  == 0 and y % (18)  == 0 :
+                im = set_area_color(im, x - 5, y + 5, (0,0,0), 5)
 
 def rotate(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
     result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
     return result
+
+# functions that allow you to work on a single screenshot instead of on the game
 
 def debug_show(im):
     """function that shows the image"""
@@ -123,10 +158,9 @@ def debug_show(im):
     river.draw_contours(im, hsv_frame)
     blackrock.draw_contours(im, hsv_frame)
     rock.draw_contours(im, hsv_frame)
-    trees.draw_contours(im, hsv_frame)
-    #axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    trees.draw_contours_return_bin(im, hsv_frame)
+    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     player.draw_contours(im, hsv_frame)
-    grid(im)
     cv2.imshow("im", im)
     while True:
         k = cv2.waitKey(1) & 0xFF
@@ -141,10 +175,17 @@ def show(im):
         if k == 27:
             break
 
-def show2(im, im2):
-    """function that shows the image without edit"""
-    cv2.imshow("dst", im2)
-    debug_show(im)
+def show2(ims):
+    """function that shows the images without edit"""
+
+    grid(ims[0])
+    #dot(ims[0])
+    for i in range (len(ims)):
+        cv2.imshow("im_" + str(i) , ims[i])
+    while True:
+        k = cv2.waitKey(1) & 0xFF
+        if k == 27:
+            break
 
 def debug_save(im):
     """function that saves the image"""
@@ -191,9 +232,8 @@ def get_pixel_color(im, x, y):
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
         raise Exception("get pixel: coordinate need to be positive!")
-    if x < rows and y < cols:
+    if x < cols and y < rows:
         return im[y,x]
-
     raise Exception("get pixel: x and y out of range!")
 
 
@@ -205,7 +245,8 @@ def set_pixel_color(im, x, y, color):
     if x < cols and y < rows:
         im[y,x] = color
         return im
-    raise Exception("get pixel: x and y out of range!")
+    return im
+    #raise Exception("get pixel: x and y out of range!" + str(y) + " " + str(rows))
 
 
 def set_area_color(im, x, y, color, size):

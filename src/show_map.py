@@ -82,6 +82,11 @@ class game_map:
             for x in range (1, self.cell_size):
                 debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size, (255, 0, 255))
 
+    def draw_tree(self, i, j):
+        for y in range (1, self.cell_size_y):
+            for x in range (1, self.cell_size):
+                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (255, 0, 0))
+
 
     def draw_image(self):
         return self.im
