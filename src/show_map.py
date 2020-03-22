@@ -9,19 +9,20 @@ class game_map:
 
     # function init to declare variables
 
-    def __init__(self, height, width, cell_size, refresh_rate):
-        self.height = height - 6
-        self.width  = width
-        self.cell_size = cell_size
-        self.cell_size_y = cell_size - 5
+    def __init__(self, height, width, cell_size_x, cell_size_y, refresh_rate):
+        self.height = height
+        self.width  = width 
+        self.cell_size_x = cell_size_x
+        self.cell_size_y = cell_size_y
 
         self.wait_time = 1/refresh_rate
 
         self.should_stop = False
 
         self.matrix = []
+        self.binary = []
 
-        self.im = np.zeros((self.height * self.cell_size, self.width * self.cell_size, 3), np.uint8)
+        self.im = np.zeros((self.height * self.cell_size_y, self.width * self.cell_size_x, 3), np.uint8)
 
     def start(self):
         self._thread = Thread(target=self.update, name=self._thread_name, args=())
@@ -54,63 +55,115 @@ class game_map:
 
     def init_matrix(self):
         matrix = []
-        for i in range (self.height):
+        for i in range (self.height) :
             local = []
             for j in range (self.width):
-                local.append(0)
+                local.append('N')
             matrix.append(local)
         self.matrix = np.array(matrix)
 
+    def print_matrix(self):
+        for j in range (len(self.matrix)):
+            x = ""
+            for i in range (len(self.matrix[0])):
+                x+= self.matrix[j][i] + " "
+            print (x)
+    
+    def get_matrix(self):
+        return self.matrix
+    
+    def get_binary_matrix(self):
+        binary = []
+        for j in range (len(self.matrix)) :
+            local = []
+            for i in range (len(self.matrix[0])):
+                local.append('-1')
+            binary.append(local)
+
+
+        for j in range (len(self.matrix)) :
+            for i in range (len(self.matrix[0])):
+                if self.matrix[j][i] == 'M':
+                    binary[j][i] = 0
+                else:
+                    binary[j][i] = 1
+        self.binary = binary
+        return self.binary
+
+    def print_binary(self):
+        for j in range (len(self.binary)):
+            x = ""
+            for i in range (len(self.binary[0])):
+                x+= str(self.binary[j][i]) + " "
+            print (x)
+    
+    def matrix_add(self, i, j, letter):
+        if i < len(self.matrix[0]) and j < len(self.matrix):
+            self.matrix[j][i] = letter
+    
+
+    def draw_matrix(self):
+        
+        size_x = self.width * self.cell_size_x
+        size_y = self.height * self.cell_size_y
+
+        for y in range (0,size_y, self.cell_size_y):
+            for x in range (0, size_x, self.cell_size_x):
+                debug.set_pixel_color(self.im, x, y, (0,255,0))
+        
+        for j in range (len(self.matrix)):
+            for i in range (len(self.matrix[0])):
+                self.draw_call(self.matrix[j][i], j, i)
+                self.draw_path(self.matrix[j][i], j, i)
+
+
+    def draw_call(self, e, j, i):
+        if   e == 'M':
+            self.draw(i, j, (86, 215, 156))
+        elif e == 'T':
+            self.draw(i, j, (109, 196, 63))    
+        elif e == 'K':
+            self.draw(i, j, (118, 150, 182))    
+        elif e == 'B':
+            self.draw(i, j, (65, 65, 65)) 
+        elif e == 'R':
+            self.draw(i, j, (243, 255, 114))
+        elif e == '0':
+            self.draw(i, j, (0, 0, 0))
+        elif e == 'P':
+            self.draw(i, j, (0, 100, 255))
+        elif e == 'A':
+            self.draw(i, j , (255, 100, 255))
+        else:
+            self.draw(i, j, (155,0,155)) 
+    
+    def draw_path(self, e, j, i):
+        if e == 'C':
+            self.draw(i, j, (255, 255, 255))
+        elif e == 'U':
+            self.draw(i, j, (255, 0, 0))
+            
+        elif e == 'S':
+            self.draw(i, j, (0, 0, 255))
+
+
+
     def draw_cell(self):
-        size_x = self.width * self.cell_size
-        size_y = self.height * self.cell_size
+        size_x = self.width * self.cell_size_x
+        size_y = self.height * self.cell_size_y
 
         for y in range (0,size_y ):
             for x in range (0, size_x ):
-                if x % self.cell_size == 0 or y % self.cell_size_y == 0:
+                if x % self.cell_size_x == 0 or y % self.cell_size_y == 0:
                     debug.set_pixel_color(self.im, x, y, (0,255,0))
                 else:
                     debug.set_pixel_color(self.im, x, y, (155,0,155))
 
-    def draw_player(self, i, j):
-        for y in range (1, self.cell_size_y):
-            for x in range (1, self.cell_size):
-                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (0, 100, 255))
-
-    def draw_axe(self, i, j):
-        for y in range (1, self.cell_size_y):
-            for x in range (1, self.cell_size):
-                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size, (255, 0, 255))
-
-    def draw_tree(self, i, j):
-        for y in range (1, self.cell_size_y):
-            for x in range (1, self.cell_size):
-                debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (109, 196, 63))
-
-    def draw_rock(self, i, j):
+    def draw(self, i, j, color):
+        
             for y in range (1, self.cell_size_y):
-                for x in range (1, self.cell_size):
-                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (118, 150, 182))
-
-    def draw_black(self, i, j):
-            for y in range (1, self.cell_size_y):
-                for x in range (1, self.cell_size):
-                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (65, 65, 65))
-
-    def draw_river(self, i, j):
-            for y in range (1, self.cell_size_y):
-                for x in range (1, self.cell_size):
-                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (243, 255, 114))
-
-    def draw_main(self, i, j):
-            for y in range (1, self.cell_size_y):
-                for x in range (1, self.cell_size):
-                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (86, 215, 156))
-
-    def draw_out(self, i, j):
-            for y in range (1, self.cell_size_y):
-                for x in range (1, self.cell_size):
-                    debug.set_pixel_color(self.im, x+i*self.cell_size, y+j*self.cell_size_y, (0, 0, 0))
+                for x in range (1, self.cell_size_x):
+                    debug.set_pixel_color(self.im, x+i*self.cell_size_x, y+j*self.cell_size_y, color)
 
     def draw_image(self):
         return self.im

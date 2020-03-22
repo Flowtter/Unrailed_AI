@@ -1,34 +1,41 @@
 import cv2
 import numpy as np
-import debug
 
-template = cv2.imread("../template.png", cv2.IMREAD_GRAYSCALE)
-height, width = template.shape
 
-def get_axe_location(image_gray):
-    """Apply template matching to gray image
-       and return axe location"""
 
-    result = cv2.matchTemplate(image_gray, template, cv2.TM_CCOEFF_NORMED)
+# magic values for river
+HSV_MIN_THRESH = np.array([82, 0, 100])
+HSV_MAX_THRESH = np.array([82, 140, 200])
 
-    location = np.where(result >= 0.9)     # trust me that threshold is working
-    return location
 
-def get_contours(image, image_gray):
-    cste_max = 500
-    for point in zip(*get_axe_location(image_gray)[::-1]): # get the location of the axe, invert the list, draw each points
-        if point[1] < int(cste_max - point[0] / 7.3):
-            return point
 
-def draw_contours(image, image_gray, color=(255, 0, 255)):
-    point = get_contours(image, image_gray)
-    if point != None:
-        cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
+def draw_contours_return_bin(image, hsv_image, color=(150, 100, 200)):
+    """Draws contours of axe found in image"""
 
-def draw_and_return_contours(image, image_gray, color=(255, 0, 255)):
-    point = get_contours(image, image_gray)
-    if point != None:
-        cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
-        return point
-    else:
-        return[0,0]
+    h, w = image.shape[:-1] # remove last value because we don't need the channels
+    bin_image = cv2.inRange(hsv_image, HSV_MIN_THRESH, HSV_MAX_THRESH) # create the bin_image with the treshold values on the hsv image and not BGR
+    # get the locations of the river then remove the grass
+
+    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(bin_image, 8, cv2.CV_32S)
+
+    dilated_bin_image = cv2.dilate(bin_image, np.ones((3, 3), np.uint8), iterations=2)
+
+    result = cv2.bitwise_and(image, image, mask=dilated_bin_image)
+    contours, hierarchy = cv2.findContours(dilated_bin_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cv2.drawContours(image, contours, -1, color, 3)
+    return result
+
+def get_bin(image, hsv_image, color=(150, 100, 200)):
+    """get contours of river found in image"""
+
+    h, w = image.shape[:-1] # remove last value because we don't need the channels
+    bin_image = cv2.inRange(hsv_image, HSV_MIN_THRESH, HSV_MAX_THRESH) # create the bin_image with the treshold values on the hsv image and not BGR
+
+    # get the locations of the river then remove the grass
+
+    nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(bin_image, 8, cv2.CV_32S)
+    dilated_bin_image = cv2.dilate(bin_image, np.ones((3, 3), np.uint8))
+
+    result = cv2.bitwise_and(image, image, mask=dilated_bin_image)
+    
+    return result
