@@ -66,7 +66,7 @@ def astar(maze, start, end, allow_diagonal_movement=False):
 
     # Adding a stop condition
     outer_iterations = 0
-    max_iterations = (len(maze[0]) * len(maze) // 2)
+    max_iterations = (len(maze[0]) * len(maze)) # // 2)
 
     # what squares do we search
     adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0),)
@@ -134,25 +134,26 @@ def astar(maze, start, end, allow_diagonal_movement=False):
             # Add the child to the open list
             heapq.heappush(open_list, child)
 
-    warn("Couldn't get a path to destination")
+    #warn("Couldn't get a path to destination")
     return None
 
 
-def run(maze, start, end, game):
+def run(maze, start, end, game, draw=False):
+    step_min = 5000
+    best_path = astar(maze, start, end[0])
 
-    path = astar(maze, start, end)
+    for i in range (1, len(end)):
+        path = astar(maze, start, end[i])
+        if path != None and len(path) < step_min:
+            step_min = len(path)
+            best_path = path
 
-    for step in path:
-        game.matrix_add(step[1], step[0], 'C')
-    #    maze[step[0]][step[1]] = 2
-    #for row in maze:
-    #    line = []
-    #    for col in row:
-    #        if col == 1:
-    #            line.append("M")
-    #        elif col == 0:
-    #            line.append("E")
-    #        elif col == 2:
-    #            line.append("C")
-    #    print("".join(line))
-    #print(path)
+    if draw:
+        for i in range (1, len(best_path)):
+            game.matrix_add(best_path[i][1], best_path[i][0], 'C')
+    
+    
+    print("--------------------------------")
+    print(best_path)
+    print("--------------------------------")
+    return best_path

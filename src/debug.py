@@ -8,13 +8,44 @@ from pathfinding import astar
 
 from detection import axe, trees, player, rock, blackrock, river, terrain, green
 
-
+from player import bot
 from capture import windowcapture
 from show_map import game_map
 
 def debug_main():
     """function to replace the main to keep it clean"""
 
+def test(im):
+    p_bot = bot.Bot(5)
+    im = cut(im)
+
+    time.sleep(2)
+
+    game = game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
+    game.init_matrix()
+    set_array_from_bin(game, im)
+
+    player_pos = game.get_pos('P')[0]
+
+    #player_pos = p_bot.move("axe", game, False, player_pos)
+
+    a = "Not None :)"
+
+    while a != None:
+            player_pos = p_bot.move("tree", game, False, player_pos)
+            a = p_bot.breaking('T', player_pos, game)
+            if a!= None:
+                player_pos = a
+            game.replace_letter('t', 'M', 'T')
+            
+    game.matrix[player_pos[0]][player_pos[1]] = 'P'
+    
+    game.draw_matrix()
+    im2 = game.draw_image()
+    grid(im)
+    show2([im, im2])
+
+def debug_game():
     #im = single_screenshot()
 
     im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
@@ -25,7 +56,7 @@ def debug_main():
     game.init_matrix()
 
     
-    get_array_from_bin(game, im)
+    set_array_from_bin(game, im)
 
 
     game.print_matrix()
@@ -37,7 +68,9 @@ def debug_main():
 
     game2 = game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
     game2.init_matrix()
-    get_array_from_bin(game2, im)
+    set_array_from_bin(game2, im)
+
+
     im5 = astar_map(game2)
     
 
@@ -71,18 +104,20 @@ def cut(im):
 
 
 def astar_map(g):
-    start, end = (15,19), (19,6)
-    print(g.get_matrix()[start[1]][start[0]])
-    print(g.get_matrix()[end[1]][end[0]])
+    player = g.get_pos('P')
+    tree = g.get_pos('t')
+    start = player[0]
+
+    # pour opti il faut ajoyter les contours, les M avec un T à coté deviennent V, je vérifie ces valuers là
 
     try:
         original = g.get_binary_matrix()
-        astar.run(original, start, end, g)
+        end = astar.run(original, start, tree, g)
     except:
         print(" ")
 
     
-    g.matrix_add(start[1], start[0], 'S')
+    g.matrix_add(start[1], start[0], 'P')
     g.matrix_add(end[1], end[0], 'U')
     g.draw_matrix()
     
@@ -95,7 +130,7 @@ def unpack_array(arr, vall, game):
             game.matrix_add(e[0], e[1], vall)
 
 
-def get_array_from_bin(game, im):
+def set_array_from_bin(game, im):
     x, y = player.get_pos(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
 
     bin_green = green.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
@@ -104,7 +139,7 @@ def get_array_from_bin(game, im):
     bin_black = blackrock.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     bin_river = river.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     bin_terrain = terrain.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-    bin_axe = axe.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+    #bin_axe = axe.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     
     #arrplayer = element(game, bin_player, bin_player, 6)
     arrtree = element(game, bin_trees, bin_trees, 3)
@@ -112,7 +147,7 @@ def get_array_from_bin(game, im):
     arrblack = element(game, bin_black, bin_black, 3)
     arrriver = element(game, bin_river, bin_river, 3)
     arrmain = element(game, bin_green, bin_green, 5)
-    areaxe = element(game, bin_axe, bin_axe, 3)
+    #areaxe = element(game, bin_axe, bin_axe, 3)
 
     arrout = element(game, bin_terrain, bin_terrain, 6)
     
@@ -122,9 +157,10 @@ def get_array_from_bin(game, im):
     unpack_array(arrtree,'T', game)
     unpack_array(arrrock, 'K', game)
     unpack_array(arrout,  '0', game)
+    game.replace_letter('t', 'M', 'T')
 
 
-    game.matrix_add(areaxe[0][0], areaxe[0][1] + 1, 'A')  # offset
+    #game.matrix_add(areaxe[0][0], areaxe[0][1] + 1, 'A')  # offset
 
     game.matrix_add(x, y, 'P')
 

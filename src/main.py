@@ -16,7 +16,10 @@ SLEEP_TIME = 1 / FRAME_RATE
 DEBUG = True
 
 if DEBUG:
-    debug.debug_main()
+    capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE)
+    capture.start()
+    frame = capture.read()
+    debug.test(frame)
     exit()
 
 capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE)

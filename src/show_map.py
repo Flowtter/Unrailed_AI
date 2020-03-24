@@ -83,7 +83,7 @@ class game_map:
 
         for j in range (len(self.matrix)) :
             for i in range (len(self.matrix[0])):
-                if self.matrix[j][i] == 'M':
+                if self.matrix[j][i] == 'M' or self.matrix[j][i] == 't' or self.matrix[j][i] == 'A':
                     binary[j][i] = 0
                 else:
                     binary[j][i] = 1
@@ -121,7 +121,9 @@ class game_map:
         if   e == 'M':
             self.draw(i, j, (86, 215, 156))
         elif e == 'T':
-            self.draw(i, j, (109, 196, 63))    
+            self.draw(i, j, (109, 196, 63))
+        elif e == 't':
+            self.draw(i, j, (70, 156, 23))   
         elif e == 'K':
             self.draw(i, j, (118, 150, 182))    
         elif e == 'B':
@@ -134,6 +136,8 @@ class game_map:
             self.draw(i, j, (0, 100, 255))
         elif e == 'A':
             self.draw(i, j , (255, 100, 255))
+        elif e == 'D':
+            self.draw(i, j , (255, 255, 255))  # Debug
         else:
             self.draw(i, j, (155,0,155)) 
     
@@ -142,10 +146,36 @@ class game_map:
             self.draw(i, j, (255, 255, 255))
         elif e == 'U':
             self.draw(i, j, (255, 0, 0))
-            
-        elif e == 'S':
-            self.draw(i, j, (0, 0, 255))
 
+    def replace_letter(self, new, old, check):
+
+        for j in range (len(self.matrix)):
+            for i in range (len(self.matrix[0])):
+                if self.matrix[j][i] == new:
+                    self.matrix[j][i] = old
+
+
+        for j in range (len(self.matrix)):
+            for i in range (len(self.matrix[0])):
+                if self.matrix[j][i] == old and i-1 > 0 and self.matrix[j][i-1] == check:
+                    self.matrix[j][i] = new
+                elif self.matrix[j][i] == old and i+1 < len(self.matrix[0]) and self.matrix[j][i+1] == check:
+                    self.matrix[j][i] = new
+
+                elif self.matrix[j][i] == old and j-1 > 0 and self.matrix[j-1][i] == check:
+                    self.matrix[j][i] = new
+                elif self.matrix[j][i] == old and j+1 < len(self.matrix) and self.matrix[j+1][i] == check:
+                    self.matrix[j][i] = new
+
+
+
+    def get_pos(self, e):
+        result = []
+        for j in range (len(self.matrix)):
+            for i in range (len(self.matrix[0])):
+                if self.matrix[j][i] == e:
+                    result.append((j , i))
+        return result
 
 
     def draw_cell(self):
