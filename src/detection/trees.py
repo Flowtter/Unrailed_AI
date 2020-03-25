@@ -2,16 +2,15 @@ import cv2
 import numpy as np
 
 # magic values for trees and grass
-HSV_MIN_THRESH = np.array([43, 165, 101])
-HSV_MAX_THRESH = np.array([73, 176, 255])
+HSV_MIN_THRESH = np.array([40, 155, 100])
+HSV_MAX_THRESH = np.array([80, 186, 255])
 
 
 def _remove_plant_from_bin_image(bin_image, nb_components, stats, w, h):
-    """Sets every pixels to 0 in binary image where there is plant
-    """
+    """Sets every pixels to 0 in binary image where there is plant"""
 
     for i in range(nb_components):
-        if stats[i][2] < w//53:
+        if stats[i][2] < w//34 or stats[i][3] < h//23:
             for y in range(stats[i][1], stats[i][1]+stats[i][3]+1):
                 for x in range(stats[i][0], stats[i][0]+stats[i][2]+1):
                     if y >= 0 and x >= 0 and y < h and x < w:

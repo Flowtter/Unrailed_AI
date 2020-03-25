@@ -83,7 +83,11 @@ class game_map:
 
         for j in range (len(self.matrix)) :
             for i in range (len(self.matrix[0])):
-                if self.matrix[j][i] == 'M' or self.matrix[j][i] == 't' or self.matrix[j][i] == 'A':
+                if self.matrix[j][i] == 'P' or \
+                self.matrix[j][i] == 'M' or  \
+                self.matrix[j][i] == 't' or  \
+                self.matrix[j][i] == 'k' or  \
+                self.matrix[j][i] == 'A':
                     binary[j][i] = 0
                 else:
                     binary[j][i] = 1
@@ -125,7 +129,9 @@ class game_map:
         elif e == 't':
             self.draw(i, j, (70, 156, 23))   
         elif e == 'K':
-            self.draw(i, j, (118, 150, 182))    
+            self.draw(i, j, (118, 150, 182))   
+        elif e == 'k':
+            self.draw(i, j, (80, 100, 140))    
         elif e == 'B':
             self.draw(i, j, (65, 65, 65)) 
         elif e == 'R':

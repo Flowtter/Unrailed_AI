@@ -11,7 +11,7 @@ import numpy as np
 
 # magic values for rocks
 HSV_MIN_THRESH = np.array([0, 0, 65])
-HSV_MAX_THRESH = np.array([0, 0, 150])
+HSV_MAX_THRESH = np.array([0, 0, 255])
 
 def _remove_random_from_bin_image(bin_image, nb_components, stats, w, h):
     """ algorithm that remove anything but rock"""

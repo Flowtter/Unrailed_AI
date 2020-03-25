@@ -30,8 +30,10 @@ My friend helped me to clean the repo. Cheers.
 
 * add the qwerty layout as an argument in the main.py
 * add a pause key to the bot
-* add an autoclicker
-* handle better errors
-* show map each after each movement
+* switch mod with keys
 * fix axe detection
 * clean the repo
+* maybe fix the rock in the map (?)
+* array of 15th last
+* random button
+* tempate matching

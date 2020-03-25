@@ -4,8 +4,8 @@ import numpy as np
 
 
 # magic values for river
-HSV_MIN_THRESH = np.array([82, 0, 100])
-HSV_MAX_THRESH = np.array([82, 140, 200])
+HSV_MIN_THRESH = np.array([80, 0, 100])
+HSV_MAX_THRESH = np.array([84, 140, 200])
 
 
 

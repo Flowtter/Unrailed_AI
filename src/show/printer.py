@@ -1,0 +1,47 @@
+from threading import Thread
+import time
+import keyboard
+import cv2
+
+class Printer:
+
+    
+    # function init to declare variables
+
+    def __init__(self, updateHZ):
+        self._thread_name =" Capture"
+        self.wait_time = 1/updateHZ
+        self.should_stop = False
+        self.last_key_press = ''
+
+    # function start, give a thread to the object
+
+    def start(self):
+        self._thread = Thread(target=self.update, name=self._thread_name, args=())
+        self._thread.daemon = True
+        self._thread.start()
+        return self
+
+    # function update, replace self.frame by an image that has been screenshoted
+
+    def update(self):
+        while not self.should_stop: # changed True by self...
+            start = time.time()
+
+            if keyboard.is_pressed('F1'):
+                self.last_key_press = 'F1'
+
+            if keyboard.is_pressed('F2'):
+                self.last_key_press = 'F2'
+
+            if keyboard.is_pressed('P'):
+                self.last_key_press = 'P'
+
+            delta = time.time() - start
+            if delta < self.wait_time:
+                time.sleep(self.wait_time - delta)
+
+    def key(self):
+        the_key = self.last_key_press
+        self.last_key_press = ''
+        return the_key

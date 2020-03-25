@@ -5,45 +5,35 @@ import pyautogui
 import win32gui
 import imutils
 from pathfinding import astar
+from show import show_map
 
 from detection import axe, trees, player, rock, blackrock, river, terrain, green
 
 from player import bot
 from capture import windowcapture
-from show_map import game_map
+
 
 def debug_main():
     """function to replace the main to keep it clean"""
+    #im =  save_screenshot()
+    im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
+    debug_show(im)
 
-def test(im):
-    p_bot = bot.Bot(5)
-    im = cut(im)
-
-    time.sleep(2)
-
-    game = game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
-    game.init_matrix()
-    set_array_from_bin(game, im)
-
-    player_pos = game.get_pos('P')[0]
-
-    #player_pos = p_bot.move("axe", game, False, player_pos)
-
-    a = "Not None :)"
-
-    while a != None:
-            player_pos = p_bot.move("tree", game, False, player_pos)
-            a = p_bot.breaking('T', player_pos, game)
-            if a!= None:
-                player_pos = a
-            game.replace_letter('t', 'M', 'T')
-            
-    game.matrix[player_pos[0]][player_pos[1]] = 'P'
+def test(im, p_bot, game, mode):
     
-    game.draw_matrix()
-    im2 = game.draw_image()
-    grid(im)
-    show2([im, im2])
+    set_array_from_bin(game, im)
+    try:
+        if mode == "rock":
+            player_pos = game.get_pos('P')[0]
+            player_pos = p_bot.move("rock", game, False, player_pos)
+            p_bot.breaking('K', player_pos, game)
+        else:
+            player_pos = game.get_pos('P')[0]
+            player_pos = p_bot.move("tree", game, False, player_pos)
+            p_bot.breaking('T', player_pos, game)
+    except:
+        print("PLAYER NOT FOUND, TRYING TO REVERSE PATH...")
+        player_pos = p_bot.rnd()
 
 def debug_game():
     #im = single_screenshot()
@@ -52,31 +42,16 @@ def debug_game():
     im = cut(im)
     #im, im2 = do_map(im)
 
-    game = game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
+    game = show_map.game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
     game.init_matrix()
 
     
     set_array_from_bin(game, im)
 
-
-    game.print_matrix()
-    #print()
-    #game.print_binary()
-
     game.draw_matrix()
     im4 = game.draw_image()
 
-    game2 = game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
-    game2.init_matrix()
-    set_array_from_bin(game2, im)
-
-
-    im5 = astar_map(game2)
-    
-
-    grid(im)
-
-    show2([im, im4, im5])
+    show2([im, im4])
 
 
 def cut(im):
@@ -125,13 +100,13 @@ def astar_map(g):
     return g.draw_image()
 
 
-def unpack_array(arr, vall, game):
+def unpack_array(arr, vall, game, offset = (0,0)):
     for e in arr:
-            game.matrix_add(e[0], e[1], vall)
+        game.matrix_add(e[0] - offset[0], e[1] - offset[1], vall)
 
 
 def set_array_from_bin(game, im):
-    x, y = player.get_pos(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
+    bin_player = player.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
 
     bin_green = green.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
     bin_trees = trees.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
@@ -139,39 +114,40 @@ def set_array_from_bin(game, im):
     bin_black = blackrock.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     bin_river = river.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     bin_terrain = terrain.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-    #bin_axe = axe.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+    bin_axe = axe.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     
-    #arrplayer = element(game, bin_player, bin_player, 6)
+
+    arrplayer = element(game, bin_player, bin_player, 3)
     arrtree = element(game, bin_trees, bin_trees, 3)
-    arrrock = element(game, bin_rocks, bin_rocks, 4)
+    arrrock = element(game, bin_rocks, bin_rocks, 5)
     arrblack = element(game, bin_black, bin_black, 3)
     arrriver = element(game, bin_river, bin_river, 3)
-    arrmain = element(game, bin_green, bin_green, 5)
-    #areaxe = element(game, bin_axe, bin_axe, 3)
+    arrmain = element(game, bin_green, bin_green, 3)
+    areaxe = element(game, bin_axe, bin_axe, 3)
 
     arrout = element(game, bin_terrain, bin_terrain, 6)
-    
+
+    unpack_array(arrrock, 'K', game)
     unpack_array(arrmain, 'M', game)
     unpack_array(arrriver,'R', game)
     unpack_array(arrblack, 'B', game)
     unpack_array(arrtree,'T', game)
-    unpack_array(arrrock, 'K', game)
     unpack_array(arrout,  '0', game)
+    
+    unpack_array(arrplayer, 'P', game, (0,-1))
+    unpack_array(areaxe, 'P', game, (0,-1))
+
     game.replace_letter('t', 'M', 'T')
+    game.replace_letter('k', 'M', 'K')
 
 
     #game.matrix_add(areaxe[0][0], areaxe[0][1] + 1, 'A')  # offset
-
-    game.matrix_add(x, y, 'P')
 
     for i in range (2):
         for j in range (20):
             game.matrix_add(i, j, '0')
     for j in range (20):
             game.matrix_add(35, j, '0')
-        
-
-    game.matrix_add(x//22, y//16, 'P')
     
 
 def element(game, bin, im, nb):
@@ -240,15 +216,14 @@ def rotate(image, angle):
 # functions that allow you to work on a single screenshot instead of on the game
 def debug_show(im):
     """function that shows the image"""
-    hsv_frame = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
-
-    #terrain.draw_contours(im, hsv_frame)
-    river.draw_contours(im, hsv_frame)
-    blackrock.draw_contours(im, hsv_frame)
-    rock.draw_contours(im, hsv_frame)
-    trees.draw_contours_return_bin(im, hsv_frame)
-    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    player.draw_contours(im, hsv_frame)
+    #player.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
+    #green.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
+    #trees.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    #rock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    #blackrock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
+    #river.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+    #terrain.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+    axe.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     cv2.imshow("im", im)
     while True:
         k = cv2.waitKey(1) & 0xFF

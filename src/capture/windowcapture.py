@@ -11,11 +11,13 @@ class WindowCapture:
 
     # function init to declare variables
 
-    def __init__(self, window_name, capture_rate):
+    def __init__(self, window_name, capture_rate, over):
         self.window_name = window_name
         self._thread_name = window_name + " Capture"
 
         self.wait_time = 1/capture_rate
+
+        self.should_over = over
 
         self.frame = self.screenshot()
         self.should_stop = False
@@ -58,6 +60,11 @@ class WindowCapture:
         if not hwnd:
             raise Exception("Window not found!")
 
+        if win32gui.GetForegroundWindow() != hwnd and self.should_over:
+            win32gui.SetForegroundWindow(hwnd)
+            time.sleep(0.1)
+            self.should_over = False
+
         l, t, r, d = win32gui.GetClientRect(hwnd)
         x, y = win32gui.ClientToScreen(hwnd, (l, t))
 
@@ -68,6 +75,9 @@ class WindowCapture:
                 ))),
                 cv2.COLOR_RGB2BGR
             )
+
+    def force_update(self):
+        return self.screenshot()
 
 
 
