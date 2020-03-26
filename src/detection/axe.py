@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-template = cv2.imread("template2.png", cv2.IMREAD_GRAYSCALE)
+template = cv2.imread("template_axe.png", cv2.IMREAD_GRAYSCALE)
 height, width = template.shape
 
 def get_axe_location(image_gray):

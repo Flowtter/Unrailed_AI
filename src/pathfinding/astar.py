@@ -168,7 +168,7 @@ def run(maze, start, end, game, last, draw=False):
             game.matrix_add(best_path[i][1], best_path[i][0], 'C')
     
     
-    #print("--------------------------------")
-    #print(best_path)
-    #print("--------------------------------")
+    print(Fore.BLUE +"-----------------------------------------------")
+    print(Fore.GREEN + "> Find a path ! " + str(best_path))
+    print(Fore.BLUE + "-----------------------------------------------")
     return best_path, last

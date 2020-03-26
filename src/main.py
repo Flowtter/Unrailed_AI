@@ -5,91 +5,107 @@ import time
 import pyautogui
 import win32gui
 import imutils
-from player import bot
-from capture import windowcapture
-from show import show_map
-import debug
-from show import printer
+import keyboard
 
 from colorama import init, Fore, Back, Style
 
-import keyboard
-
+from player import bot
+from capture import windowcapture
+from show import show_map
+from show import printer
+from functions import *
 from detection import trees, player, rock, blackrock, river, terrain, green, axe, pickaxe
+from layout import Layout
+
+import functions
 
 init(convert=True)
 
 #sys.stderr = object
+os.system('cls')
+
 
 ESC_KEY = 27
-
 FRAME_RATE = 5
 SLEEP_TIME = 1 / FRAME_RATE
 
-"""Remove on last commit"""
-
-DEBUG = False
 
 run = True
-
 mode = "tree"
 
+if len(sys.argv) == 1:
+    layout_mode = "qwerty"
+else:
+    if sys.argv[1] == "azerty" or sys.argv[1] == "qwerty":
+        layout_mode = sys.argv[1]
+    else:
+        raise Exception ("argument should be 'azerty' or 'qwerty'")
+
+
+l = Layout(layout_mode)
+
 capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE, True)
-p = printer.Printer(40)
-p_bot = bot.Bot()
+p = printer.Printer(40, l)
+p_bot = bot.Bot(l)
+
+print(Fore.WHITE +  f"""> This project has been made by Naexys! Thanks for using it !
+    keybind:
+    F1: Quit
+    F2: Pause Bot  
+    {l.change}: Change Mode
+    {l.ok}: Positive Confirmation
+    {l.no}: Negative Confirmation
+    {l.random}: Randomize movements
+    {l.drop}: Emergency drop Item
+    """)
 
 
-os.system('cls')
-
-print("> This project has been made by Naexys! Thanks for using it ! \n keybind: \n F1: Quit \n F2: Pause Bot \n P: Change Mode \n C: Positive Confirmation \n N: Negative Conformation\n M: Randomize movements \n L: Emergency drop Item")
-
-game = show_map.game_map(20,36,22,16,10)  # (self, height, width, cell_size, refresh_rate):
-
+# create map
+game = show_map.game_map(20,36,22,16,10)
 game.init_matrix()
 
-
-if DEBUG:
-    debug.debug_main(game)
-    exit()
-
-
+# pick the axe and move out of the train station
 p_bot.input('space', 0.1)
 time.sleep(0.3)
 p_bot.input('s', 0.5)
 
-
+# start the bot
 p.start()
 
-time.sleep(1)
-
+# var for the main loop
 tried = 0
 change = False
 random = False
 
+# last obj
 last = []
 for i in range(15):
     last.append((0,0))
 
+# main loop
 while True:
+
+    #region KEY
 
     key = p.key()
 
+
     if key == 'F1':
-        print("> This project has been made by Naexys! Thanks for using it !")
+        print(Fore.WHITE +"> This project has been made by Naexys! Thanks for using it !")
         break
     elif key == 'F2':
         if run:
-            print("> Bot is waiting!")
+            print(Fore.YELLOW +"> I'M WAITING!")
             run = False
         else:
-            print("> Bot is starting!")
+            print(Fore.YELLOW +"> I'M STARTING!")
             run = True
-    elif key == 'P':
-        print("> CHANGING TARGET")
+    elif key == l.change:# and not change:
+        print(Fore.MAGENTA +"> I'M CHANGING TARGET")
         change = True
-    elif key == 'C':
+    elif key == l.ok:# and change:
         change = False
-        print("> GOT THE CONFIRMATION")
+        print(Fore.GREEN +"> Thanks for the confirmation")
         p_bot.input("space", 0.3)
 
         if mode == "tree":
@@ -98,70 +114,58 @@ while True:
             mode = "tree"
 
         tried = 0
-
-    elif key == 'L':
+    elif key == l.drop:
         change = False
-        print("> EMERGENCY DROP")
+        print(Fore.RED +"> EMERGENCY DROP")
         p_bot.input("space", 0.3)
-        change = True
-
-    elif key == 'N':
+        print(Fore.RED +"> WAITING FOR YOUR CALL")
+        run = False
+    elif key == l.no:# and change:
         change = False
+        tried = 0
         if mode == "tree":
-            print("> SORRY, BACK TO CHOPPING")
+            print(Fore.BLUE +"> I'M SORRY, BACK TO CHOPPING")
         else:
-            print("> SORRY, BACK TO MINING")
-
-    elif key == 'M':
+            print(Fore.BLUE +"> I'M SORRY, BACK TO MINING")
+    elif key == l.random :
         random = True
         change = False
-        print("> WANT SOME RANDOM ? :)")
+        print(Fore.YELLOW +"> WANT SOME RANDOM ? :)")
     
+    #endregion 
 
     if run:
+
         game.draw_matrix()
         im2 = game.draw_image()
+        cv2.imshow("frame2", im2)
         
         game.init_matrix()
         start = time.time()
 
-        frame = capture.force_update()
-        
-        im = debug.cut(frame)
-
-        #bug car image rotate
-
-        
-        cv2.imshow("frame2", im2)
+        frame = capture.force_update() # uh oh
+        im = functions.cut(frame)
 
         if tried != -1:
-            tried, last = debug.test(im, p_bot, game, last, mode, change, tried, random)
+            tried, last = functions.test(im, p_bot, game, last, mode, change, tried, random)
 
         random = False
 
         if tried >= 15: #  If the bot do not find the object
             change = False
             if mode == "tree":
-                print("> SORRY, BACK TO CHOPPING")
+                print("> I'M SORRY, BACK TO CHOPPING")
             else:
-                print("> SORRY, BACK TO MINING")
+                print("> I'M SORRY, BACK TO MINING")
             tried = 0
         
+        functions.draw(im)
+        functions.grid(im)
         
-        player.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
-        axe.draw_contours(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY ))
-        pickaxe.draw_contours(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY ))
+        # function to print the matrix
+        #game.print_matrix()
 
-        #green.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
-        #trees.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-        #rock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-        #blackrock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-        #river.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-        #terrain.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-
-        debug.grid(im)
         cv2.imshow("frame1", im)
-
 
         delta = time.time() - start
         if delta < SLEEP_TIME:
@@ -170,6 +174,7 @@ while True:
         key = cv2.waitKey(1) & 0xFF
         if key == ESC_KEY:
             break
+
     else:
         time.sleep(1)
 

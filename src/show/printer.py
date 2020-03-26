@@ -1,18 +1,17 @@
 from threading import Thread
 import time
 import keyboard
-import cv2
-
 class Printer:
 
     
     # function init to declare variables
 
-    def __init__(self, updateHZ):
+    def __init__(self, updateHZ, l):
         self._thread_name =" Capture"
         self.wait_time = 1/updateHZ
         self.should_stop = False
         self.last_key_press = ''
+        self.l = l
 
     # function start, give a thread to the object
 
@@ -34,20 +33,20 @@ class Printer:
             if keyboard.is_pressed('F2'):
                 self.last_key_press = 'F2'
 
-            if keyboard.is_pressed('P'):
-                self.last_key_press = 'P'
+            if keyboard.is_pressed(self.l.change):
+                self.last_key_press = self.l.change
 
-            if keyboard.is_pressed('N'):
-                self.last_key_press = 'N'
+            if keyboard.is_pressed(self.l.no):
+                self.last_key_press = self.l.no
 
-            if keyboard.is_pressed('C'):
-                self.last_key_press = 'C'
+            if keyboard.is_pressed(self.l.ok):
+                self.last_key_press = self.l.ok
             
-            if keyboard.is_pressed('M'):
-                self.last_key_press = 'M'
+            if keyboard.is_pressed(self.l.random):
+                self.last_key_press = self.l.random
 
-            if keyboard.is_pressed('L'):
-                self.last_key_press = 'L'
+            if keyboard.is_pressed(self.l.drop):
+                self.last_key_press = self.l.drop
 
             delta = time.time() - start
             if delta < self.wait_time:

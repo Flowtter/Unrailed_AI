@@ -4,7 +4,7 @@ from threading import Thread
 import time
 from colorama import init, Fore, Back, Style
 
-import debug
+import functions
 
 class game_map:
 
@@ -88,7 +88,8 @@ class game_map:
                 self.matrix[j][i] == 'M' or  \
                 self.matrix[j][i] == 't' or  \
                 self.matrix[j][i] == 'k' or  \
-                self.matrix[j][i] == 'A':
+                self.matrix[j][i] == 'A' or \
+                self.matrix[j][i] == 'I':
                     binary[j][i] = 0
                 else:
                     binary[j][i] = 1
@@ -114,7 +115,7 @@ class game_map:
 
         for y in range (0,size_y, self.cell_size_y):
             for x in range (0, size_x, self.cell_size_x):
-                debug.set_pixel_color(self.im, x, y, (0,255,0))
+                functions.set_pixel_color(self.im, x, y, (0,255,0))
         
         for j in range (len(self.matrix)):
             for i in range (len(self.matrix[0])):
@@ -194,15 +195,15 @@ class game_map:
         for y in range (0,size_y ):
             for x in range (0, size_x ):
                 if x % self.cell_size_x == 0 or y % self.cell_size_y == 0:
-                    debug.set_pixel_color(self.im, x, y, (0,255,0))
+                    functions.set_pixel_color(self.im, x, y, (0,255,0))
                 else:
-                    debug.set_pixel_color(self.im, x, y, (155,0,155))
+                    functions.set_pixel_color(self.im, x, y, (155,0,155))
 
     def draw(self, i, j, color):
         
             for y in range (1, self.cell_size_y):
                 for x in range (1, self.cell_size_x):
-                    debug.set_pixel_color(self.im, x+i*self.cell_size_x, y+j*self.cell_size_y, color)
+                    functions.set_pixel_color(self.im, x+i*self.cell_size_x, y+j*self.cell_size_y, color)
 
     def draw_image(self):
         return self.im

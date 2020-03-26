@@ -13,23 +13,25 @@ My friend helped me to clean the repo. Cheers.
 
 ## Pictures
 
+### The computer vsion
 ![](assets/demo.gif)
-![](assets/chop.gif)
+
+### The transcription of it's vision and the pathfinding
 ![](assets/Dot.PNG)
+
+### The computer playing
+![](assets/play.gif)
+
+## Video
+
+[Unrailed AI!](https://youtu.be/Hu6cn4zaFlU)
 
 ## Get started
 
 * `launch "Unrailed!"`
 * `set the resolution to 800x600 px`
-* `set the first player to the orange Penguin with the azerty layout`
+* `set the quality to medium`
+* `set the first player to the orange Penguin`
 * `git clone https://github.com/Naexys/Unrailed_AI.git`
 * `cd Unrailed_AI/src`
-* `python main.py`
-
-## TO-DO
-
-
-* clean the repo
-* add the qwerty layout as an argument in the main.py
-
-* fix out of range error
+* `python main.py azerty` or `python main.py qwerty`

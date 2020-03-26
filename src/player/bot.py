@@ -20,8 +20,9 @@ class Bot:
 
     # function init to declare variables
 
-    def __init__(self):
+    def __init__(self, l):
         self.should_stop = False
+        self.l = l
 
     def input(self, key, t):
         pyautogui.keyDown(key)
@@ -52,7 +53,7 @@ class Bot:
             return astar.run(original, start, rock, g, last)
 
         else:
-            raise Exception("bot: path: not a valid object")
+            raise Exception("Path: not a valid object")
 
 
     def move(self, obj, game, draw, player_pos, last):
@@ -63,18 +64,18 @@ class Bot:
                 y = player_pos[1] - vect[1]
                 player_pos = vect
                 if    y > 0:
-                    self.movement('q')
+                    self.movement(self.l.left)
                 elif  y < 0:
-                    self.movement('d')
+                    self.movement(self.l.right)
                 elif  x < 0:
-                    self.movement('s')
+                    self.movement(self.l.down)
                 elif  x > 0:
-                    self.movement('z')
+                    self.movement(self.l.up)
             else:
-                print(obj)
+                print(Fore.GREEN + f"> I got a path to {obj} !")
             
         else:
-            print("Movement is null!")
+            print(Fore.RED + "E: Movement is null!")
 
 
         return player_pos, last
@@ -84,38 +85,38 @@ class Bot:
         game.matrix[player_pos[0]][player_pos[1]] = 'M'  # Remove the 't'
 
         if player_pos[0] -1 > 0 and game.matrix[player_pos[0] - 1][player_pos[1]] == obj:
-            self.input('z', BREAK_TIME)   
+            self.input(self.l.up, BREAK_TIME)   
             return (player_pos[0] - 1,player_pos[1])
 
 
         elif player_pos[0] +1 < len(game.matrix) and  game.matrix[player_pos[0] + 1][player_pos[1]] == obj:
-            self.input('s', BREAK_TIME)
+            self.input(self.l.down, BREAK_TIME)
             return (player_pos[0] + 1,player_pos[1])
 
 
         elif player_pos[1] -1 > 0 and  game.matrix[player_pos[0]][player_pos[1] - 1] == obj:
-            self.input('q', BREAK_TIME)
+            self.input(self.l.left, BREAK_TIME)
             return (player_pos[0],player_pos[1]- 1)
 
 
         elif player_pos[1] +1 < len(game.matrix[0])  and  game.matrix[player_pos[0]][player_pos[1] + 1] == obj:
-            self.input('d', BREAK_TIME)
+            self.input(self.l.right, BREAK_TIME)
             return (player_pos[0],player_pos[1] + 1)
         
-        print(f"no {obj} are reachable")
+        print(Fore.RED + f"E: I can't reach {obj}")
         return None
 
     def rnd(self, r):
         for i in range(r):
             r = random.randrange(0, 4, 1)
             if    r == 0:
-                self.movement('q')
+                self.movement(self.l.left)
             elif  r == 1:
-                self.movement('d')
+                self.movement(self.l.right)
             elif  r == 2:
-                self.movement('s')
+                self.movement(self.l.down)
             elif  r == 3:
-                self.movement('z')
+                self.movement(self.l.up)
 
 
 
