@@ -7,33 +7,95 @@ import imutils
 from pathfinding import astar
 from show import show_map
 
-from detection import axe, trees, player, rock, blackrock, river, terrain, green
+from detection import axe, pickaxe, trees, player, rock, blackrock, river, terrain, green
 
 from player import bot
 from capture import windowcapture
 
 
-def debug_main():
+def debug_main(game):
     """function to replace the main to keep it clean"""
-    #im =  save_screenshot()
-    im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
+    im =  single_screenshot()
+    #im = cut(im)
+    #im = cv2.imread("../test_data/img_debug_save.png", cv2.COLOR_RGB2BGR)
+    im = cut(im)
+
+    axe_pos = axe.get_axe_minimap(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
+    pickaxe_pos = pickaxe.get_axe_minimap(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
+
+    bin_green = green.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
+    arrmain = element(game, bin_green, bin_green, 3)
+    unpack_array(arrmain, 'M', game)
+
+    bin_p = player.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
+    arrplayer = element(game, bin_p, bin_p, 3)
+    unpack_array(arrplayer, 'P', game)
+
+    if pickaxe_pos != None:
+        for i in range (len(axe_pos)):
+            axe_pos[i] = (axe_pos[i][0]//22, axe_pos[i][1]//16)
+            unpack_array(axe_pos, 'A', game, (0,-1))
+    
+    if pickaxe_pos != None:
+        for i in range (len(pickaxe_pos)):
+            pickaxe_pos[i] = (pickaxe_pos[i][0]//22, pickaxe_pos[i][1]//16)
+            unpack_array(pickaxe_pos, 'I', game, (0,-1))
+
+
+    game.draw_matrix()
+    im2 = game.draw_image()
+
+    
+
+    cv2.imshow("t", im2)
+
+
+
     debug_show(im)
 
-def test(im, p_bot, game, mode):
+def test(im, p_bot, game, last, mode, change, tried, random):
     
     set_array_from_bin(game, im)
-    try:
-        if mode == "rock":
+
+    if random:
+        player_pos = p_bot.rnd(15)
+        return 0, last
+
+
+    if change == False:
+        try:
+            if mode == "rock":
+                player_pos = game.get_pos('P')[0]
+                player_pos, last = p_bot.move("rock", game, False, player_pos, last)
+                p_bot.breaking('K', player_pos, game)
+            else:
+                player_pos = game.get_pos('P')[0]
+                player_pos, last = p_bot.move("tree", game, False, player_pos, last)
+                p_bot.breaking('T', player_pos, game)
+            return 0, last
+        except:
+            print("> PLAYER NOT FOUND, TRYING TO REVERSE PATH... ")
+            player_pos = p_bot.rnd(3)
+            return 0, last
+    
+    else:
+        try:
             player_pos = game.get_pos('P')[0]
-            player_pos = p_bot.move("rock", game, False, player_pos)
-            p_bot.breaking('K', player_pos, game)
-        else:
-            player_pos = game.get_pos('P')[0]
-            player_pos = p_bot.move("tree", game, False, player_pos)
-            p_bot.breaking('T', player_pos, game)
-    except:
-        print("PLAYER NOT FOUND, TRYING TO REVERSE PATH...")
-        player_pos = p_bot.rnd()
+            if mode == "tree":
+                player_pos = p_bot.move("pickaxe", game, False, player_pos, last)
+                print("> FIND THE PICKAXE, WAITING FOR CONFIRMATION...")
+                return -1, last
+            
+            elif mode == "rock":
+                player_pos = p_bot.move("axe", game, False, player_pos, last)
+                print("> FIND THE AXE, WAITING FOR CONFIRMATION...")
+                return -1, last
+        except:
+            if mode == "tree":
+                print("> COULD NOT FIND THE PICKAXE, RETRYING...")
+            else:
+                print("> COULD NOT FIND THE AXE, RETRYING...")
+            return tried + 1, last
 
 def debug_game():
     #im = single_screenshot()
@@ -102,11 +164,17 @@ def astar_map(g):
 
 def unpack_array(arr, vall, game, offset = (0,0)):
     for e in arr:
-        game.matrix_add(e[0] - offset[0], e[1] - offset[1], vall)
+        try:
+            game.matrix_add(e[0] - offset[0], e[1] - offset[1], vall)
+        except:
+            pass  # FIXME
 
 
 def set_array_from_bin(game, im):
+    
     bin_player = player.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
+    
+    arrplayer = element(game, bin_player, bin_player, 3)
 
     bin_green = green.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
     bin_trees = trees.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
@@ -114,16 +182,16 @@ def set_array_from_bin(game, im):
     bin_black = blackrock.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     bin_river = river.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     bin_terrain = terrain.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-    bin_axe = axe.get_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+
+    axe_pos = axe.get_axe_minimap(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
+    pickaxe_pos = pickaxe.get_axe_minimap(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
     
 
-    arrplayer = element(game, bin_player, bin_player, 3)
     arrtree = element(game, bin_trees, bin_trees, 3)
     arrrock = element(game, bin_rocks, bin_rocks, 5)
     arrblack = element(game, bin_black, bin_black, 3)
     arrriver = element(game, bin_river, bin_river, 3)
     arrmain = element(game, bin_green, bin_green, 3)
-    areaxe = element(game, bin_axe, bin_axe, 3)
 
     arrout = element(game, bin_terrain, bin_terrain, 6)
 
@@ -135,13 +203,21 @@ def set_array_from_bin(game, im):
     unpack_array(arrout,  '0', game)
     
     unpack_array(arrplayer, 'P', game, (0,-1))
-    unpack_array(areaxe, 'P', game, (0,-1))
+
+    if pickaxe_pos != None:
+        for i in range (len(axe_pos)):
+            axe_pos[i] = (axe_pos[i][0]//22, axe_pos[i][1]//16)
+            unpack_array(axe_pos, 'A', game, (0,-1))
+    
+    if pickaxe_pos != None:
+        for i in range (len(pickaxe_pos)):
+            pickaxe_pos[i] = (pickaxe_pos[i][0]//22, pickaxe_pos[i][1]//16)
+            unpack_array(pickaxe_pos, 'I', game, (0,-1))
+
 
     game.replace_letter('t', 'M', 'T')
     game.replace_letter('k', 'M', 'K')
 
-
-    #game.matrix_add(areaxe[0][0], areaxe[0][1] + 1, 'A')  # offset
 
     for i in range (2):
         for j in range (20):
@@ -171,10 +247,12 @@ def element(game, bin, im, nb):
                 for i in range (len(arrE)):
                     somme += (arrE[i][0] != 0 and arrE[i][1] != 0 and arrE[i][2] != 0)
                 if somme >= nb:
-                    result.append([x//22 - 1, y//16])  # minus one because magic
+                    result.append([x//22 - 1, y//16])  # minus one because magic 
+
+
     return result
 
-
+# ??????????????? ^^^^^^^^^
 def grid(im):
     tiny_offset = 0
     
@@ -223,7 +301,9 @@ def debug_show(im):
     #blackrock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     #river.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     #terrain.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-    axe.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
+    pos = axe.get_axe_minimap(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
+    axe.draw_contours(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
+    pickaxe.draw_contours(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY))
     cv2.imshow("im", im)
     while True:
         k = cv2.waitKey(1) & 0xFF
@@ -288,6 +368,11 @@ def single_screenshot():
 def save_screenshot():
     """function that take a single screnshot of the game and save it"""
     cv2.imwrite("../test_data/img_debug.png", single_screenshot())
+
+
+def save_single():
+    """function that take a single screnshot of the game and save it"""
+    cv2.imwrite("../test_data/img_debug_save.png",rotate(single_screenshot(), -8))
 
 
 # functions to work on the image in BGR

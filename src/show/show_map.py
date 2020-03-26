@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from threading import Thread
 import time
+from colorama import init, Fore, Back, Style
 
 import debug
 
@@ -67,7 +68,7 @@ class game_map:
             x = ""
             for i in range (len(self.matrix[0])):
                 x+= self.matrix[j][i] + " "
-            print (x)
+            print (Fore.WHITE + x)
     
     def get_matrix(self):
         return self.matrix
@@ -99,7 +100,7 @@ class game_map:
             x = ""
             for i in range (len(self.binary[0])):
                 x+= str(self.binary[j][i]) + " "
-            print (x)
+            print (Fore.WHITE + x)
     
     def matrix_add(self, i, j, letter):
         if i < len(self.matrix[0]) and j < len(self.matrix):
@@ -141,7 +142,9 @@ class game_map:
         elif e == 'P':
             self.draw(i, j, (0, 100, 255))
         elif e == 'A':
-            self.draw(i, j , (255, 100, 255))
+            self.draw(i, j , (150, 100, 200))
+        elif e == 'I':
+            self.draw(i, j , (200, 100, 150))
         elif e == 'D':
             self.draw(i, j , (255, 255, 255))  # Debug
         else:

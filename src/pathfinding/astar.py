@@ -3,6 +3,7 @@
 from warnings import warn
 import heapq
 
+from colorama import init, Fore, Back, Style
 
 class Node:
     """
@@ -80,7 +81,7 @@ def astar(maze, start, end, allow_diagonal_movement=False):
         if outer_iterations > max_iterations:
             # if we hit this point return the path such as it is
             # it will not contain the destination
-            warn("giving up on pathfinding too many iterations")
+            #warn("giving up on pathfinding too many iterations")
             return return_path(current_node)
 
         # Get the current node
@@ -138,22 +139,36 @@ def astar(maze, start, end, allow_diagonal_movement=False):
     return None
 
 
-def run(maze, start, end, game, draw=False):
+def run(maze, start, end, game, last, draw=False):
     step_min = 5000
     best_path = astar(maze, start, end[0])
+    best_end = (0,0)
+    can = True
+    path_len = 0    
 
     for i in range (1, len(end)):
         path = astar(maze, start, end[i])
         if path != None and len(path) < step_min:
-            step_min = len(path)
-            best_path = path
+            path_len = len(path) - 1
+            for j in range (len(last)):
+                if path[path_len] == last[j]:
+                    can = False
+            if can:
+                step_min = len(path)
+                best_path = path
+                best_end = end[i]
+            can = True
+
+    last.pop()
+    last.insert(0, best_end)
+
 
     if draw:
         for i in range (1, len(best_path)):
             game.matrix_add(best_path[i][1], best_path[i][0], 'C')
     
     
-    print("--------------------------------")
-    print(best_path)
-    print("--------------------------------")
-    return best_path
+    #print("--------------------------------")
+    #print(best_path)
+    #print("--------------------------------")
+    return best_path, last

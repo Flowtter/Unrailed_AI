@@ -8,6 +8,9 @@ import keyboard
 import random
 from pathfinding import astar
 
+
+from colorama import init, Fore, Back, Style
+
 SPEED = 0.105
 TIME_OFF = 0.15
 BREAK_TIME = 1.8
@@ -29,30 +32,31 @@ class Bot:
         self.input(key, SPEED)
         time.sleep(TIME_OFF)
 
-    def path(self, start, obj, g, draw):
+    def path(self, start, obj, g, draw, last):
         original = g.get_binary_matrix()
-        print(f"path to {obj}")
 
         if obj == "axe":
-            pickaxe = g.get_pos('A')
-            return astar.run(original, start, pickaxe, g, draw)
+            axe = g.get_pos('A')
+            return astar.run(original, start, axe, g, last)
+
+        elif obj == "pickaxe":
+            pickaxe = g.get_pos('I')
+            return astar.run(original, start, pickaxe, g, last)
 
         elif obj == "tree":
-            print("searching for trees")
             tree = g.get_pos('t')
-            return astar.run(original, start, tree, g, draw)
+            return astar.run(original, start, tree, g, last)
         
         elif obj == "rock":
-            print("searching for rocks")
             rock = g.get_pos('k')
-            return astar.run(original, start, rock, g, draw)
+            return astar.run(original, start, rock, g, last)
 
         else:
             raise Exception("bot: path: not a valid object")
 
 
-    def move(self, obj, game, draw, player_pos):
-        movement = self.path(player_pos, obj, game, draw)
+    def move(self, obj, game, draw, player_pos, last):
+        movement, last = self.path(player_pos, obj, game, draw, last)
         if movement != None:
             for vect in movement:
                 x = player_pos[0] - vect[0]
@@ -66,14 +70,14 @@ class Bot:
                     self.movement('s')
                 elif  x > 0:
                     self.movement('z')
-            #if obj == "axe":
-            #    self.input("space", 0.1)
+            else:
+                print(obj)
             
         else:
             print("Movement is null!")
 
 
-        return player_pos
+        return player_pos, last
 
     def breaking(self, obj, player_pos, game):
         
@@ -101,8 +105,8 @@ class Bot:
         print(f"no {obj} are reachable")
         return None
 
-    def rnd(self):
-        for i in range(3):
+    def rnd(self, r):
+        for i in range(r):
             r = random.randrange(0, 4, 1)
             if    r == 0:
                 self.movement('q')

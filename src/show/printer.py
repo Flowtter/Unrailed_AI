@@ -37,6 +37,18 @@ class Printer:
             if keyboard.is_pressed('P'):
                 self.last_key_press = 'P'
 
+            if keyboard.is_pressed('N'):
+                self.last_key_press = 'N'
+
+            if keyboard.is_pressed('C'):
+                self.last_key_press = 'C'
+            
+            if keyboard.is_pressed('M'):
+                self.last_key_press = 'M'
+
+            if keyboard.is_pressed('L'):
+                self.last_key_press = 'L'
+
             delta = time.time() - start
             if delta < self.wait_time:
                 time.sleep(self.wait_time - delta)

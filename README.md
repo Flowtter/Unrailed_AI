@@ -28,12 +28,8 @@ My friend helped me to clean the repo. Cheers.
 
 ## TO-DO
 
-* add the qwerty layout as an argument in the main.py
-* add a pause key to the bot
-* switch mod with keys
-* fix axe detection
+
 * clean the repo
-* maybe fix the rock in the map (?)
-* array of 15th last
-* random button
-* tempate matching
+* add the qwerty layout as an argument in the main.py
+
+* fix out of range error
