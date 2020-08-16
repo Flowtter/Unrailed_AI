@@ -13,7 +13,7 @@ My friend helped me to clean the repo. Cheers.
 
 ## Pictures
 
-### The computer vsion
+### The computer vision
 ![](assets/demo.gif)
 
 ### The transcription of it's vision and the pathfinding
