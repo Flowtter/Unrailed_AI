@@ -16,7 +16,7 @@ My friend helped me to clean the repo. Cheers.
 ### The computer vision
 ![](assets/demo.gif)
 
-### The transcription of it's vision and the pathfinding
+### The transcription of its vision and the pathfinding
 ![](assets/Dot.PNG)
 
 ### The computer playing
