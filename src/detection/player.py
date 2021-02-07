@@ -66,7 +66,7 @@ def get_bin(image, hsv_image, color=(0, 100, 255)):
 
     h, w = image.shape[:-1] # remove last value because we don't need the channels
     bin_image = cv2.inRange(hsv_image, HSV_MIN_THRESH_RED, HSV_MAX_THRESH_RED)
-    # get the locations of the river then remove the grass
+    # get the locations of rivers then remove the grass
 
     nb_components, output, stats, centroids = cv2.connectedComponentsWithStats(bin_image, 8, cv2.CV_32S)
     dilated_bin_image = cv2.dilate(bin_image, np.ones((3, 3), np.uint8))

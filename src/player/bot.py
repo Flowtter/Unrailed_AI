@@ -18,8 +18,6 @@ BREAK_TIME = 1.8
 
 class Bot:
 
-    # function init to declare variables
-
     def __init__(self, l):
         self.should_stop = False
         self.l = l
@@ -82,7 +80,7 @@ class Bot:
 
     def breaking(self, obj, player_pos, game):
         
-        game.matrix[player_pos[0]][player_pos[1]] = 'M'  # Remove the 't'
+        game.matrix[player_pos[0]][player_pos[1]] = 'M'
 
         if player_pos[0] -1 > 0 and game.matrix[player_pos[0] - 1][player_pos[1]] == obj:
             self.input(self.l.up, BREAK_TIME)   

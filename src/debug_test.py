@@ -11,7 +11,6 @@ from detection import axe, pickaxe, trees, player, rock, blackrock, river, terra
 
 
 def debug_main(game):
-    """function to replace the main to keep it clean"""
     im = single_screenshot()
     im = cut(im)
 
@@ -88,13 +87,11 @@ def test(im, p_bot, game, last, mode, change, tried, random):
 
 
 def debug_game():
-    # im = single_screenshot()
 
     im = cv2.imread("../test_data/img_debug.png", cv2.COLOR_RGB2BGR)
     im = cut(im)
-    # im, im2 = do_map(im)
 
-    game = show_map.game_map(20, 36, 22, 16, 10)  # (self, height, width, cell_size, refresh_rate):
+    game = show_map.game_map(20, 36, 22, 16, 10)
     game.init_matrix()
 
     set_array_from_bin(game, im)
@@ -132,8 +129,6 @@ def astar_map(g):
     player = g.get_pos('P')
     tree = g.get_pos('t')
     start = player[0]
-
-    # pour opti il faut ajoyter les contours, les M avec un T à coté deviennent V, je vérifie ces valuers là
 
     try:
         original = g.get_binary_matrix()
@@ -229,12 +224,11 @@ def element(game, bin, im, nb):
             for i in range(len(arrE)):
                 somme += (arrE[i][0] != 0 and arrE[i][1] != 0 and arrE[i][2] != 0)
             if somme >= nb:
-                result.append([x // 22 - 1, y // 16])  # minus one because magic
+                result.append([x // 22 - 1, y // 16]) 
 
     return result
 
 
-# ??????????????? ^^^^^^^^^
 def grid(im):
     tiny_offset = 0
 
@@ -272,16 +266,8 @@ def rotate(image, angle):
     return result
 
 
-# functions that allow you to work on a single screenshot instead of on the game
+
 def debug_show(im):
-    """function that shows the image"""
-    # player.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
-    # green.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV))
-    # trees.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    # rock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    # blackrock.draw_contours_return_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
-    # river.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
-    # terrain.draw_contours_return_bin(im, cv2.cvtColor(im,cv2.COLOR_BGR2HSV ))
     pos = axe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     pickaxe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
@@ -293,7 +279,7 @@ def debug_show(im):
 
 
 def show(im):
-    """function that shows the image without edit"""
+    """function that shows an image without any edit"""
     cv2.imshow("im1", im)
     while True:
         k = cv2.waitKey(1) & 0xFF
@@ -302,7 +288,7 @@ def show(im):
 
 
 def show2(ims):
-    """function that shows the images without edit"""
+    """function that shows images without any edit"""
     for i in range(len(ims)):
         cv2.imshow("im_" + str(i), ims[i])
     while True:
@@ -326,7 +312,7 @@ def debug_save(im):
 
 
 def single_screenshot():
-    """function that take a single screnshot of the game to work on it"""
+    """function that takes a single screnshot of the game to work on it"""
     hwnd = win32gui.FindWindow(None, "Unrailed!")
     if not hwnd:
         raise Exception("Window not found!")
@@ -347,40 +333,37 @@ def single_screenshot():
 
 
 def save_screenshot():
-    """function that take a single screnshot of the game and save it"""
+    """function that takes a single screnshot of the game and saves it"""
     cv2.imwrite("../test_data/img_debug.png", single_screenshot())
 
 
 def save_single():
-    """function that take a single screnshot of the game and save it"""
+    """function that takes a single screnshot of the game, rotates it, and saves it"""
     cv2.imwrite("../test_data/img_debug_save.png", rotate(single_screenshot(), -8))
 
-
-# functions to work on the image in BGR
 def get_pixel_color(im, x, y):
-    """function to get the pixel color"""
+    """get the pixel color"""
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
-        raise Exception("get pixel: coordinate need to be positive!")
+        raise Exception("get pixel: coordinates need to be positive!")
     if x < cols and y < rows:
         return im[y, x]
     raise Exception("get pixel: x and y out of range!")
 
 
 def set_pixel_color(im, x, y, color):
-    """function to set the pixel color"""
+    """set the pixel color"""
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
-        raise Exception("get pixel: coordinate need to be positive!")
+        raise Exception("get pixel: coordinates need to be positive!")
     if x < cols and y < rows:
         im[y, x] = color
         return im
     return im
-    # raise Exception("get pixel: x and y out of range!" + str(y) + " " + str(rows))
 
 
 def set_area_color(im, x, y, color, size):
-    """function to set an area of pixels color"""
+    """set an area of pixels color"""
     half_size = size // 2
     x_half, y_half = x - half_size, y - half_size
     for i in range(size):
@@ -391,5 +374,5 @@ def set_area_color(im, x, y, color, size):
 
 
 def convert_HSV(color):
-    """function to convert HSV percentage in 8bit value"""
+    """convert HSV percentage in 8bit value"""
     return color * 255 / 100

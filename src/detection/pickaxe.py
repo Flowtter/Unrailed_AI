@@ -11,7 +11,7 @@ def get_axe_location(image_gray):
 
     result = cv2.matchTemplate(image_gray, template, cv2.TM_CCOEFF_NORMED)
 
-    location = np.where(result >= 0.75)     # trust me that threshold is working
+    location = np.where(result >= 0.75)
     return location
 
 def draw_contours(image, image_gray, color=(200, 100, 150)):

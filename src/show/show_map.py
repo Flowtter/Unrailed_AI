@@ -8,8 +8,6 @@ import functions
 
 class game_map:
 
-    # function init to declare variables
-
     def __init__(self, height, width, cell_size_x, cell_size_y, refresh_rate):
         self.height = height
         self.width  = width 
@@ -31,8 +29,6 @@ class game_map:
         self._thread.start()
         return self
 
-    # function update, replace self.frame by an image that has been screenshoted
-
     def update(self):
         while not self.should_stop:
             start = time.time()
@@ -43,12 +39,8 @@ class game_map:
             if delta < self.wait_time:
                 time.sleep(self.wait_time - delta)
 
-    # function that return the image
-
     def read(self):
         return self.frame
-
-    # function that join the thread to then stop them
 
     def stop(self):
         self.should_stop = True

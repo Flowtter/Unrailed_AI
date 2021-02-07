@@ -11,7 +11,7 @@ def get_axe_location(image_gray):
 
     result = cv2.matchTemplate(image_gray, template, cv2.TM_CCOEFF_NORMED)
 
-    location = np.where(result >= 0.85)     # trust me that threshold is working
+    location = np.where(result >= 0.85)
     return location
 
 def draw_contours(image, image_gray, color=(150, 100, 200)):
@@ -19,7 +19,7 @@ def draw_contours(image, image_gray, color=(150, 100, 200)):
 
     cste_max = 500
     try:
-        for point in zip(*get_axe_location(image_gray)[::-1]): # get the location of the axe, invert the list, draw each points
+        for point in zip(*get_axe_location(image_gray)[::-1]):
             cv2.rectangle(image, (point[0] - 2, point[1] - 2), (point[0] + width + 2, point[1] + height + 2), color, 2)
 
     except:
@@ -30,7 +30,7 @@ def get_axe_minimap(image, image_gray):
     result = []
 
     try:
-        for point in zip(*get_axe_location(image_gray)[::-1]): # get the location of the axe, invert the list, draw each points
+        for point in zip(*get_axe_location(image_gray)[::-1]):
             result.append((point[0] + width//2, point[1] + height//2))
         return result
     except:

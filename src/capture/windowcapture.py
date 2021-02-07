@@ -8,9 +8,6 @@ import win32gui
 
 
 class WindowCapture:
-
-    # function init to declare variables
-
     def __init__(self, window_name, capture_rate, over):
         self.window_name = window_name
         self._thread_name = window_name + " Capture"
@@ -22,18 +19,14 @@ class WindowCapture:
         self.frame = self.screenshot()
         self.should_stop = False
 
-    # function start, give a thread to the object
-
     def start(self):
         self._thread = Thread(target=self.update, name=self._thread_name, args=())
         self._thread.daemon = True
         self._thread.start()
         return self
 
-    # function update, replace self.frame by an image that has been screenshoted
-
     def update(self):
-        while not self.should_stop: # changed True by self...
+        while not self.should_stop:
             start = time.time()
 
             self.frame = self.screenshot()
@@ -42,18 +35,15 @@ class WindowCapture:
             if delta < self.wait_time:
                 time.sleep(self.wait_time - delta)
 
-    # function that return the image
 
     def read(self):
         return self.frame
 
-    # function that join the thread to then stop them
 
     def stop(self):
         self.should_stop = True
         self._thread.join()
 
-    # function that take the screenshot of the game, self.window_name
 
     def screenshot(self):
         hwnd = win32gui.FindWindow(None, self.window_name)

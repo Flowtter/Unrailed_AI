@@ -48,7 +48,7 @@ capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE, True)
 p = printer.Printer(40, l)
 p_bot = bot.Bot(l)
 
-print(Fore.WHITE +  f"""> This project has been made by Naexys! Thanks for using it !
+print(Fore.WHITE +  f"""> This project has been made by Flowtter! Thanks for using it !
     keybind:
     F1: Quit
     F2: Pause Bot  
@@ -91,7 +91,7 @@ while True:
 
 
     if key == 'F1':
-        print(Fore.WHITE +"> This project has been made by Naexys! Thanks for using it !")
+        print(Fore.WHITE +"> This project has been made by Flowtter! Thanks for using it !")
         break
     elif key == 'F2':
         if run:
@@ -151,7 +151,7 @@ while True:
 
         random = False
 
-        if tried >= 15: #  If the bot do not find the object
+        if tried >= 15:
             change = False
             if mode == "tree":
                 print("> I'M SORRY, BACK TO CHOPPING")
@@ -161,9 +161,6 @@ while True:
         
         functions.draw(im)
         functions.grid(im)
-        
-        # function to print the matrix
-        #game.print_matrix()
 
         cv2.imshow("frame1", im)
 

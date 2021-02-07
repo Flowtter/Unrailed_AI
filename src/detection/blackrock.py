@@ -1,14 +1,6 @@
 import cv2
 import numpy as np
 
-# dark bro in BGR : [ 68  87 105]
-# dark bro in HSV : [144 56 11] in percentage
-# dark bro in HSV : [144 142 28] in values
-
-# light brown in BGR : [118 150 182]
-# light brown in HSV : [142 56 41] in percentage
-# light brown in HSV : [142 142 104] in values
-
 # magic values for rocks
 HSV_MIN_THRESH_UNDER = np.array([0, 0, 0])
 HSV_MAX_THRESH_UNDER = np.array([5, 25, 63])

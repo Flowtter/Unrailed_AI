@@ -194,20 +194,20 @@ def rotate(image, angle):
 
 
 def get_pixel_color(im, x, y):
-    """function to get the pixel color"""
+    """get the pixel color"""
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
-        raise Exception("get pixel: coordinate need to be positive!")
+        raise Exception("get pixel: coordinates need to be positive!")
     if x < cols and y < rows:
         return im[y, x]
     raise Exception("get pixel: x and y out of range!")
 
 
 def set_pixel_color(im, x, y, color):
-    """function to set the pixel color"""
+    """set the pixel color"""
     rows, cols = im.shape[:-1]
     if x < 0 and y < 0:
-        raise Exception("get pixel: coordinate need to be positive!")
+        raise Exception("get pixel: coordinates need to be positive!")
     if x < cols and y < rows:
         im[y, x] = color
         return im

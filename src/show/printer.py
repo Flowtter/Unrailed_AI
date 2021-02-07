@@ -3,9 +3,6 @@ import time
 import keyboard
 class Printer:
 
-    
-    # function init to declare variables
-
     def __init__(self, updateHZ, l):
         self._thread_name =" Capture"
         self.wait_time = 1/updateHZ
@@ -13,18 +10,14 @@ class Printer:
         self.last_key_press = ''
         self.l = l
 
-    # function start, give a thread to the object
-
     def start(self):
         self._thread = Thread(target=self.update, name=self._thread_name, args=())
         self._thread.daemon = True
         self._thread.start()
         return self
 
-    # function update, replace self.frame by an image that has been screenshoted
-
     def update(self):
-        while not self.should_stop: # changed True by self...
+        while not self.should_stop:
             start = time.time()
 
             if keyboard.is_pressed('F1'):
