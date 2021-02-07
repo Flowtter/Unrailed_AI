@@ -9,13 +9,13 @@ from show import show_map
 from detection import axe, pickaxe, trees, player, rock, blackrock, river, terrain, green
 
 
-
 def debug_main(game):
     im = single_screenshot()
     im = cut(im)
 
     axe_pos = axe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    pickaxe_pos = pickaxe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    pickaxe_pos = pickaxe.get_axe_minimap(im,
+                                          cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
 
     bin_green = green.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
     arrmain = element(game, bin_green, bin_green, 3)
@@ -54,11 +54,13 @@ def test(im, p_bot, game, last, mode, change, tried, random):
         try:
             if mode == "rock":
                 player_pos = game.get_pos('P')[0]
-                player_pos, last = p_bot.move("rock", game, False, player_pos, last)
+                player_pos, last = p_bot.move("rock", game, False, player_pos,
+                                              last)
                 p_bot.breaking('K', player_pos, game)
             else:
                 player_pos = game.get_pos('P')[0]
-                player_pos, last = p_bot.move("tree", game, False, player_pos, last)
+                player_pos, last = p_bot.move("tree", game, False, player_pos,
+                                              last)
                 p_bot.breaking('T', player_pos, game)
             return 0, last
         except:
@@ -70,7 +72,8 @@ def test(im, p_bot, game, last, mode, change, tried, random):
         try:
             player_pos = game.get_pos('P')[0]
             if mode == "tree":
-                player_pos = p_bot.move("pickaxe", game, False, player_pos, last)
+                player_pos = p_bot.move("pickaxe", game, False, player_pos,
+                                        last)
                 print("> FIND THE PICKAXE, WAITING FOR CONFIRMATION...")
                 return -1, last
 
@@ -164,7 +167,8 @@ def set_array_from_bin(game, im):
     bin_terrain = terrain.get_bin(im, cv2.cvtColor(im, cv2.COLOR_BGR2HSV))
 
     axe_pos = axe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    pickaxe_pos = pickaxe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    pickaxe_pos = pickaxe.get_axe_minimap(im,
+                                          cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
 
     arrtree = element(game, bin_trees, bin_trees, 3)
     arrrock = element(game, bin_rocks, bin_rocks, 5)
@@ -222,9 +226,10 @@ def element(game, bin, im, nb):
             arrE = [arr0, arr1, arr2, arr3, arr4, arr5, arr6, arr7, arr8]
             somme = 0
             for i in range(len(arrE)):
-                somme += (arrE[i][0] != 0 and arrE[i][1] != 0 and arrE[i][2] != 0)
+                somme += (arrE[i][0] != 0 and arrE[i][1] != 0
+                          and arrE[i][2] != 0)
             if somme >= nb:
-                result.append([x // 22 - 1, y // 16]) 
+                result.append([x // 22 - 1, y // 16])
 
     return result
 
@@ -262,9 +267,11 @@ def dot(im):
 def rotate(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    result = cv2.warpAffine(image,
+                            rot_mat,
+                            image.shape[1::-1],
+                            flags=cv2.INTER_LINEAR)
     return result
-
 
 
 def debug_show(im):
@@ -324,12 +331,11 @@ def single_screenshot():
         time.sleep(0.1)
 
     return cv2.cvtColor(
-        np.asarray(pyautogui.screenshot(region=(
-            x, y,
-            *win32gui.ClientToScreen(hwnd, (r - x, d - y))
-        ))),
-        cv2.COLOR_RGB2BGR
-    )
+        np.asarray(
+            pyautogui.screenshot(
+                region=(x, y,
+                        *win32gui.ClientToScreen(hwnd, (r - x, d - y))))),
+        cv2.COLOR_RGB2BGR)
 
 
 def save_screenshot():
@@ -339,7 +345,9 @@ def save_screenshot():
 
 def save_single():
     """function that takes a single screnshot of the game, rotates it, and saves it"""
-    cv2.imwrite("../test_data/img_debug_save.png", rotate(single_screenshot(), -8))
+    cv2.imwrite("../test_data/img_debug_save.png",
+                rotate(single_screenshot(), -8))
+
 
 def get_pixel_color(im, x, y):
     """get the pixel color"""

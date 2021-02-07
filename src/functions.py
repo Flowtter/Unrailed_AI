@@ -4,6 +4,7 @@ from detection import axe, pickaxe, trees, player, rock, blackrock, river, terra
 
 from colorama import init, Fore, Back, Style
 
+
 def test(im, p_bot, game, last, mode, change, tried, random):
     set_array_from_bin(game, im)
 
@@ -15,11 +16,13 @@ def test(im, p_bot, game, last, mode, change, tried, random):
         try:
             if mode == "rock":
                 player_pos = game.get_pos('P')[0]
-                player_pos, last = p_bot.move("rock", game, False, player_pos, last)
+                player_pos, last = p_bot.move("rock", game, False, player_pos,
+                                              last)
                 p_bot.breaking('K', player_pos, game)
             else:
                 player_pos = game.get_pos('P')[0]
-                player_pos, last = p_bot.move("tree", game, False, player_pos, last)
+                player_pos, last = p_bot.move("tree", game, False, player_pos,
+                                              last)
                 p_bot.breaking('T', player_pos, game)
             return 0, last
         except:
@@ -31,13 +34,16 @@ def test(im, p_bot, game, last, mode, change, tried, random):
         try:
             player_pos = game.get_pos('P')[0]
             if mode == "tree":
-                player_pos = p_bot.move("pickaxe", game, False, player_pos, last)
-                print(Fore.YELLOW + "> FIND THE PICKAXE, WAITING FOR CONFIRMATION...")
+                player_pos = p_bot.move("pickaxe", game, False, player_pos,
+                                        last)
+                print(Fore.YELLOW +
+                      "> FIND THE PICKAXE, WAITING FOR CONFIRMATION...")
                 return -1, last
 
             elif mode == "rock":
                 player_pos = p_bot.move("axe", game, False, player_pos, last)
-                print(Fore.YELLOW + "> FIND THE AXE, WAITING FOR CONFIRMATION...")
+                print(Fore.YELLOW +
+                      "> FIND THE AXE, WAITING FOR CONFIRMATION...")
                 return -1, last
         except:
             if mode == "tree":
@@ -48,7 +54,7 @@ def test(im, p_bot, game, last, mode, change, tried, random):
 
 
 def set_array_from_bin(game, im):
-    im_hsv = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
+    im_hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
     bin_player = player.get_bin(im, im_hsv)
     arrplayer = element(game, bin_player, bin_player, 3)
@@ -61,7 +67,8 @@ def set_array_from_bin(game, im):
     bin_terrain = terrain.get_bin(im, im_hsv)
 
     axe_pos = axe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    pickaxe_pos = pickaxe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    pickaxe_pos = pickaxe.get_axe_minimap(im,
+                                          cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
 
     arrtree = element(game, bin_trees, bin_trees, 3)
     arrrock = element(game, bin_rocks, bin_rocks, 5)
@@ -100,7 +107,6 @@ def set_array_from_bin(game, im):
         game.matrix_add(35, j, '0')
 
 
-
 def element(game, bin, im, nb):
     result = []
     for x in range(22, 810, 22):
@@ -120,9 +126,11 @@ def element(game, bin, im, nb):
             arrE = [arr0, arr1, arr2, arr3, arr4, arr5, arr6, arr7, arr8]
             somme = 0
             for i in range(len(arrE)):
-                somme += (arrE[i][0] != 0 and arrE[i][1] != 0 and arrE[i][2] != 0)
+                somme += (arrE[i][0] != 0 and arrE[i][1] != 0
+                          and arrE[i][2] != 0)
             if somme >= nb:
-                result.append([x // 22 - 1, y // 16])  # minus one because magic
+                result.append([x // 22 - 1,
+                               y // 16])  # minus one because magic
 
     return result
 
@@ -137,11 +145,11 @@ def unpack_array(arr, vall, game, offset=(0, 0)):
 
 
 def draw(im):
-    im_hsv = cv2.cvtColor(im,cv2.COLOR_BGR2HSV)
-    
+    im_hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
     player.draw_contours_return_bin(im, im_hsv)
-    axe.draw_contours(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY ))
-    pickaxe.draw_contours(im, cv2.cvtColor(im,cv2.COLOR_BGR2GRAY ))
+    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    pickaxe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
     #green.draw_contours_return_bin(im, im_hsv)
     #trees.draw_contours_return_bin(im, im_hsv)
     #rock.draw_contours_return_bin(im, im_hsv)
@@ -189,7 +197,10 @@ def grid(im):
 def rotate(image, angle):
     image_center = tuple(np.array(image.shape[1::-1]) / 2)
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+    result = cv2.warpAffine(image,
+                            rot_mat,
+                            image.shape[1::-1],
+                            flags=cv2.INTER_LINEAR)
     return result
 
 

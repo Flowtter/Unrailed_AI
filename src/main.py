@@ -24,11 +24,9 @@ init(convert=True)
 #sys.stderr = object
 os.system('cls')
 
-
 ESC_KEY = 27
 FRAME_RATE = 5
 SLEEP_TIME = 1 / FRAME_RATE
-
 
 run = True
 mode = "tree"
@@ -39,8 +37,7 @@ else:
     if sys.argv[1] == "azerty" or sys.argv[1] == "qwerty":
         layout_mode = sys.argv[1]
     else:
-        raise Exception ("argument should be 'azerty' or 'qwerty'")
-
+        raise Exception("argument should be 'azerty' or 'qwerty'")
 
 l = Layout(layout_mode)
 
@@ -48,7 +45,8 @@ capture = windowcapture.WindowCapture("Unrailed!", FRAME_RATE, True)
 p = printer.Printer(40, l)
 p_bot = bot.Bot(l)
 
-print(Fore.WHITE +  f"""> This project has been made by Flowtter! Thanks for using it !
+print(Fore.WHITE +
+      f"""> This project has been made by Flowtter! Thanks for using it !
     keybind:
     F1: Quit
     F2: Pause Bot  
@@ -59,9 +57,8 @@ print(Fore.WHITE +  f"""> This project has been made by Flowtter! Thanks for usi
     {l.drop}: Emergency drop Item
     """)
 
-
 # create map
-game = show_map.game_map(20,36,22,16,10)
+game = show_map.game_map(20, 36, 22, 16, 10)
 game.init_matrix()
 
 # pick the axe and move out of the train station
@@ -80,7 +77,7 @@ random = False
 # last obj
 last = []
 for i in range(15):
-    last.append((0,0))
+    last.append((0, 0))
 
 # main loop
 while True:
@@ -89,23 +86,24 @@ while True:
 
     key = p.key()
 
-
     if key == 'F1':
-        print(Fore.WHITE +"> This project has been made by Flowtter! Thanks for using it !")
+        print(
+            Fore.WHITE +
+            "> This project has been made by Flowtter! Thanks for using it !")
         break
     elif key == 'F2':
         if run:
-            print(Fore.YELLOW +"> I'M WAITING!")
+            print(Fore.YELLOW + "> I'M WAITING!")
             run = False
         else:
-            print(Fore.YELLOW +"> I'M STARTING!")
+            print(Fore.YELLOW + "> I'M STARTING!")
             run = True
-    elif key == l.change:# and not change:
-        print(Fore.MAGENTA +"> I'M CHANGING TARGET")
+    elif key == l.change:  # and not change:
+        print(Fore.MAGENTA + "> I'M CHANGING TARGET")
         change = True
-    elif key == l.ok:# and change:
+    elif key == l.ok:  # and change:
         change = False
-        print(Fore.GREEN +"> Thanks for the confirmation")
+        print(Fore.GREEN + "> Thanks for the confirmation")
         p_bot.input("space", 0.3)
 
         if mode == "tree":
@@ -116,38 +114,39 @@ while True:
         tried = 0
     elif key == l.drop:
         change = False
-        print(Fore.RED +"> EMERGENCY DROP")
+        print(Fore.RED + "> EMERGENCY DROP")
         p_bot.input("space", 0.3)
-        print(Fore.RED +"> WAITING FOR YOUR CALL")
+        print(Fore.RED + "> WAITING FOR YOUR CALL")
         run = False
-    elif key == l.no:# and change:
+    elif key == l.no:  # and change:
         change = False
         tried = 0
         if mode == "tree":
-            print(Fore.BLUE +"> I'M SORRY, BACK TO CHOPPING")
+            print(Fore.BLUE + "> I'M SORRY, BACK TO CHOPPING")
         else:
-            print(Fore.BLUE +"> I'M SORRY, BACK TO MINING")
-    elif key == l.random :
+            print(Fore.BLUE + "> I'M SORRY, BACK TO MINING")
+    elif key == l.random:
         random = True
         change = False
-        print(Fore.YELLOW +"> WANT SOME RANDOM ? :)")
-    
-    #endregion 
+        print(Fore.YELLOW + "> WANT SOME RANDOM ? :)")
+
+    #endregion
 
     if run:
 
         game.draw_matrix()
         im2 = game.draw_image()
         cv2.imshow("frame2", im2)
-        
+
         game.init_matrix()
         start = time.time()
 
-        frame = capture.force_update() # uh oh
+        frame = capture.force_update()  # uh oh
         im = functions.cut(frame)
 
         if tried != -1:
-            tried, last = functions.test(im, p_bot, game, last, mode, change, tried, random)
+            tried, last = functions.test(im, p_bot, game, last, mode, change,
+                                         tried, random)
 
         random = False
 
@@ -158,7 +157,7 @@ while True:
             else:
                 print("> I'M SORRY, BACK TO MINING")
             tried = 0
-        
+
         functions.draw(im)
         functions.grid(im)
 

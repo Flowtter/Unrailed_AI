@@ -6,13 +6,12 @@ import time
 import win32gui
 
 
-
 class WindowCapture:
     def __init__(self, window_name, capture_rate, over):
         self.window_name = window_name
         self._thread_name = window_name + " Capture"
 
-        self.wait_time = 1/capture_rate
+        self.wait_time = 1 / capture_rate
 
         self.should_over = over
 
@@ -20,7 +19,9 @@ class WindowCapture:
         self.should_stop = False
 
     def start(self):
-        self._thread = Thread(target=self.update, name=self._thread_name, args=())
+        self._thread = Thread(target=self.update,
+                              name=self._thread_name,
+                              args=())
         self._thread.daemon = True
         self._thread.start()
         return self
@@ -35,15 +36,12 @@ class WindowCapture:
             if delta < self.wait_time:
                 time.sleep(self.wait_time - delta)
 
-
     def read(self):
         return self.frame
-
 
     def stop(self):
         self.should_stop = True
         self._thread.join()
-
 
     def screenshot(self):
         hwnd = win32gui.FindWindow(None, self.window_name)
@@ -59,19 +57,11 @@ class WindowCapture:
         x, y = win32gui.ClientToScreen(hwnd, (l, t))
 
         return cv2.cvtColor(
-                np.asarray(pyautogui.screenshot(region=(
-                x, y,
-                *win32gui.ClientToScreen(hwnd,(r-x, d-y))
-                ))),
-                cv2.COLOR_RGB2BGR
-            )
+            np.asarray(
+                pyautogui.screenshot(
+                    region=(x, y,
+                            *win32gui.ClientToScreen(hwnd, (r - x, d - y))))),
+            cv2.COLOR_RGB2BGR)
 
     def force_update(self):
         return self.screenshot()
-
-
-
-
-
-
-
