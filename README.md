@@ -32,6 +32,7 @@ My friend helped me to clean the repo. Cheers.
 * `set the resolution to 800x600 px`
 * `set the quality to medium`
 * `set the first player to the orange Penguin`
-* `git clone https://github.com/Naexys/Unrailed_AI.git`
+* `git clone https://github.com/Flowtter/unrailed-ai.git`
+* `pip install -r requirements.txt`
 * `cd Unrailed_AI/src`
 * `python main.py azerty` or `python main.py qwerty`
