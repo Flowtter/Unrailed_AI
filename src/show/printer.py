@@ -5,7 +5,7 @@ import keyboard
 
 class Printer:
     def __init__(self, updateHZ, l):
-        self._thread_name = " Capture"
+        self._thread_name = "Capture"
         self.wait_time = 1/updateHZ
         self.should_stop = False
         self.last_key_press = ''

@@ -12,7 +12,7 @@ def __remove_all_from_bin_image(bin_image, nb_components, stats, w, h, n):
                         bin_image[y][x] = 0
 
 
-def get_bin(image, hsv_image, HSV_TABLE, remove_value=(0, 0), terrain=False):
+def get_bin(image, hsv_image, HSV_TABLE, remove_value=(0, 0), terrain=False, draw=False, color=(0, 0, 0)):
     """get contours of the terrain found in image"""
     h, w = image.shape[:-1]
     for i in range(len(HSV_TABLE)):
@@ -29,7 +29,13 @@ def get_bin(image, hsv_image, HSV_TABLE, remove_value=(0, 0), terrain=False):
         __remove_all_from_bin_image(
             bin_image, nb_components, stats, w, h, remove_value)
     dilated_bin_image = cv2.dilate(bin_image, np.ones((3, 3), np.uint8))
-    if terrain: # wtf
-            dilated_bin_image = cv2.bitwise_not(dilated_bin_image, dilated_bin_image)
+    if terrain:  # assumption seems wrong. TODO: verify
+        dilated_bin_image = cv2.bitwise_not(
+            dilated_bin_image, dilated_bin_image)
 
+    if draw:
+        contours, _ = cv2.findContours(dilated_bin_image,
+                                       cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_NONE)
+        cv2.drawContours(image, contours, -1, color, 3)
     return cv2.bitwise_and(image, image, mask=dilated_bin_image)

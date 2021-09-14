@@ -2,11 +2,11 @@ import cv2
 import numpy as np
 
 
-AXE_TEMPLATE= cv2.imread("template_axe.png", cv2.IMREAD_GRAYSCALE)
+AXE_TEMPLATE = cv2.imread("template_axe.png", cv2.IMREAD_GRAYSCALE)
 PICKAXE_TEMPLATE = cv2.imread("template_pickaxe.png", cv2.IMREAD_GRAYSCALE)
 
-AXE_TRESH = 0.85
-PICKAXE_TRESH = 0.75
+AXE_TRESH = 0.65
+PICKAXE_TRESH = 0.60
 
 # magic values for rocks
 HSV_MIN_THRESH_BROCK_1 = np.array([0, 0, 0])

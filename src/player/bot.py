@@ -1,4 +1,4 @@
-import pyautogui
+import pydirectinput
 import time
 import random
 from pathfinding import astar
@@ -16,9 +16,10 @@ class Bot:
         self.l = l
 
     def input(self, key, t):
-        pyautogui.keyDown(key)
+        print("Your time to shine", key)
+        pydirectinput.keyDown(key)
         time.sleep(t)
-        pyautogui.keyUp(key)
+        pydirectinput.keyUp(key)
 
     def movement(self, key):
         self.input(key, SPEED)

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 from detection import environment, from_img
-from constantes import *
+from constants import *
 
 from colorama import Fore
 
@@ -66,7 +66,7 @@ def set_array_from_bin(game, im):
     bin_rocks = environment.get_bin(im, im_hsv, HSV_ROCK, (15, 0))
     bin_black = environment.get_bin(im, im_hsv, HSV_BROCK, (15, 0))
     bin_river = environment.get_bin(im, im_hsv, HSV_RIVER, (20, 0))
-    bin_terrain = environment.get_bin(im, im_hsv, HSV_TERRAIN, (2, 0))
+    bin_terrain = environment.get_bin(im, im_hsv, HSV_TERRAIN, (2, 0), 1)
 
     axe_pos = from_img.get_img_minimap(cv2.cvtColor(
         im, cv2.COLOR_BGR2GRAY), AXE_TEMPLATE, AXE_TRESH)
@@ -144,6 +144,25 @@ def unpack_array(arr, vall, game, offset=(0, 0)):
         if e[0] - offset[0] > 0 and e[0] - offset[0] < len(game.matrix[0]) \
                 and e[1] - offset[1] > 0 and e[1] - offset[1] < len(game.matrix):
             game.matrix_add(e[0] - offset[0], e[1] - offset[1], vall)
+
+
+def draw(im):
+    im_hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+
+    # from_img.draw_contours(im, cv2.cvtColor(
+    #    im, cv2.COLOR_BGR2GRAY), AXE_TEMPLATE, AXE_TRESH, (0, 0, 255))
+    # from_img.draw_contours(im, cv2.cvtColor(
+    #    im, cv2.COLOR_BGR2GRAY), PICKAXE_TEMPLATE, PICKAXE_TRESH, (0, 255, 255))
+
+    environment.get_bin(im, im_hsv, HSV_PLAYER, (0, 0), 0, 1, (255, 0, 0))
+    # environment.get_bin(im, im_hsv, HSV_MAP, (50, 0), 0, 1, (100,100,175))
+
+    # environment.get_bin(im, im_hsv, HSV_TREES, (34, 23), 0, 1, (100,255,0))
+    # environment.get_bin(im, im_hsv, HSV_ROCK, (15, 0), 0, 1, (150,150,150))
+    # environment.get_bin(im, im_hsv, HSV_BROCK, (15, 0), 0, 1, (50,50,50))
+    # environment.get_bin(im, im_hsv, HSV_RIVER, (20, 0), 0, 1, (255,100,0))
+
+    # environment.get_bin(im, im_hsv, HSV_TERRAIN, (2, 0), 1, 1, (0,0,0))
 
 
 def cut(im):

@@ -3,7 +3,7 @@
 from warnings import warn
 import heapq
 
-from colorama import Fore,
+from colorama import Fore
 
 
 class Node:

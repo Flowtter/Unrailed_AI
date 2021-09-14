@@ -55,10 +55,20 @@ print(Fore.WHITE +
 game = show_map.game_map(20, 36, 22, 16, 10)
 game.init_matrix()
 
+print(Fore.RED + "> Please move down so I can pick the axe !")
+
+# We don't know what the real player will use, IE: controller, arrow keys...
+# while keyboard.read_key() != "s":
+#     continue
+
+time.sleep(3)
 # pick the axe and move out of the train station
+p_bot.input('d', 1.3)
+time.sleep(0.3)
 p_bot.input('space', 0.1)
 time.sleep(0.3)
 p_bot.input('s', 0.5)
+
 
 # start the bot
 p.start()
