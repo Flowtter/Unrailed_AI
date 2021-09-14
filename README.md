@@ -36,3 +36,4 @@ My friend helped me to clean the repo. Cheers.
 * `pip install -r requirements.txt`
 * `cd Unrailed_AI/src`
 * `python main.py azerty` or `python main.py qwerty`
+* `you may have to change in the constant.py file AXE_TRESH, PICKAXE_TRESH, HSV_PLAYER`
