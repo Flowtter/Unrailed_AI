@@ -1,1 +1,0 @@
-For better understanding of the code, I left it the code split and did not implement it as a class.

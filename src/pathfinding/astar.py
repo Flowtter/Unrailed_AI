@@ -3,7 +3,8 @@
 from warnings import warn
 import heapq
 
-from colorama import init, Fore, Back, Style
+from colorama import Fore,
+
 
 class Node:
     """
@@ -65,7 +66,8 @@ def astar(maze, start, end, allow_diagonal_movement=False):
 
     adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0),)
     if allow_diagonal_movement:
-        adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1),)
+        adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0),
+                            (-1, -1), (-1, 1), (1, -1), (1, 1),)
 
     while len(open_list) > 0:
         outer_iterations += 1
@@ -81,9 +83,10 @@ def astar(maze, start, end, allow_diagonal_movement=False):
 
         children = []
 
-        for new_position in adjacent_squares: 
+        for new_position in adjacent_squares:
 
-            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
+            node_position = (
+                current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (
                     len(maze[len(maze) - 1]) - 1) or node_position[1] < 0:
@@ -102,7 +105,7 @@ def astar(maze, start, end, allow_diagonal_movement=False):
 
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
-                        (child.position[1] - end_node.position[1]) ** 2)
+                (child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
             if len([open_node for open_node in open_list if
@@ -117,15 +120,15 @@ def astar(maze, start, end, allow_diagonal_movement=False):
 def run(maze, start, end, game, last, draw=False):
     step_min = 5000
     best_path = astar(maze, start, end[0])
-    best_end = (0,0)
+    best_end = (0, 0)
     can = True
-    path_len = 0    
+    path_len = 0
 
-    for i in range (1, len(end)):
+    for i in range(1, len(end)):
         path = astar(maze, start, end[i])
         if path != None and len(path) < step_min:
             path_len = len(path) - 1
-            for j in range (len(last)):
+            for j in range(len(last)):
                 if path[path_len] == last[j]:
                     can = False
             if can:
@@ -137,13 +140,11 @@ def run(maze, start, end, game, last, draw=False):
     last.pop()
     last.insert(0, best_end)
 
-
     if draw:
-        for i in range (1, len(best_path)):
+        for i in range(1, len(best_path)):
             game.matrix_add(best_path[i][1], best_path[i][0], 'C')
-    
-    
-    print(Fore.BLUE  + "-----------------------------------------------")
+
+    print(Fore.BLUE + "-----------------------------------------------")
     print(Fore.GREEN + "> Find a path ! " + str(best_path))
-    print(Fore.BLUE  + "-----------------------------------------------")
+    print(Fore.BLUE + "-----------------------------------------------")
     return best_path, last

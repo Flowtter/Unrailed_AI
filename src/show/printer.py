@@ -1,17 +1,19 @@
 from threading import Thread
 import time
 import keyboard
-class Printer:
 
+
+class Printer:
     def __init__(self, updateHZ, l):
-        self._thread_name =" Capture"
+        self._thread_name = " Capture"
         self.wait_time = 1/updateHZ
         self.should_stop = False
         self.last_key_press = ''
         self.l = l
 
     def start(self):
-        self._thread = Thread(target=self.update, name=self._thread_name, args=())
+        self._thread = Thread(target=self.update,
+                              name=self._thread_name, args=())
         self._thread.daemon = True
         self._thread.start()
         return self
@@ -34,7 +36,7 @@ class Printer:
 
             if keyboard.is_pressed(self.l.ok):
                 self.last_key_press = self.l.ok
-            
+
             if keyboard.is_pressed(self.l.random):
                 self.last_key_press = self.l.random
 

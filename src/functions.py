@@ -1,8 +1,10 @@
 import cv2
 import numpy as np
-from detection import axe, pickaxe, trees, player, rock, blackrock, river, terrain, green
 
-from colorama import init, Fore, Back, Style
+from detection import environment, from_img
+from constantes import *
+
+from colorama import Fore
 
 
 def test(im, p_bot, game, last, mode, change, tried, random):
@@ -56,27 +58,28 @@ def test(im, p_bot, game, last, mode, change, tried, random):
 def set_array_from_bin(game, im):
     im_hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
-    bin_player = player.get_bin(im, im_hsv)
-    arrplayer = element(game, bin_player, bin_player, 3)
+    bin_player = environment.get_bin(im, im_hsv, HSV_PLAYER)
+    arrplayer = element(bin_player, 3)
 
-    bin_green = green.get_bin(im, im_hsv)
-    bin_trees = trees.get_bin(im, im_hsv)
-    bin_rocks = rock.get_bin(im, im_hsv)
-    bin_black = blackrock.get_bin(im, im_hsv)
-    bin_river = river.get_bin(im, im_hsv)
-    bin_terrain = terrain.get_bin(im, im_hsv)
+    bin_green = environment.get_bin(im, im_hsv, HSV_MAP, (50, 0))
+    bin_trees = environment.get_bin(im, im_hsv, HSV_TREES, (34, 23))
+    bin_rocks = environment.get_bin(im, im_hsv, HSV_ROCK, (15, 0))
+    bin_black = environment.get_bin(im, im_hsv, HSV_BROCK, (15, 0))
+    bin_river = environment.get_bin(im, im_hsv, HSV_RIVER, (20, 0))
+    bin_terrain = environment.get_bin(im, im_hsv, HSV_TERRAIN, (2, 0))
 
-    axe_pos = axe.get_axe_minimap(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    pickaxe_pos = pickaxe.get_axe_minimap(im,
-                                          cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
+    axe_pos = from_img.get_img_minimap(cv2.cvtColor(
+        im, cv2.COLOR_BGR2GRAY), AXE_TEMPLATE, AXE_TRESH)
+    pickaxe_pos = from_img.get_img_minimap(cv2.cvtColor(
+        im, cv2.COLOR_BGR2GRAY), PICKAXE_TEMPLATE, PICKAXE_TEMPLATE)
 
-    arrtree = element(game, bin_trees, bin_trees, 3)
-    arrrock = element(game, bin_rocks, bin_rocks, 5)
-    arrblack = element(game, bin_black, bin_black, 3)
-    arrriver = element(game, bin_river, bin_river, 3)
-    arrmain = element(game, bin_green, bin_green, 3)
+    arrtree = element(bin_trees,  3)
+    arrrock = element(bin_rocks,  5)
+    arrblack = element(bin_black,  3)
+    arrriver = element(bin_river,  3)
+    arrmain = element(bin_green,  3)
 
-    arrout = element(game, bin_terrain, bin_terrain, 6)
+    arrout = element(bin_terrain,  6)
 
     unpack_array(arrrock, 'K', game)
     unpack_array(arrmain, 'M', game)
@@ -107,7 +110,7 @@ def set_array_from_bin(game, im):
         game.matrix_add(35, j, '0')
 
 
-def element(game, bin, im, nb):
+def element(bin, nb):
     result = []
     for x in range(22, 810, 22):
         for y in range(0, 320, 16):
@@ -139,23 +142,8 @@ def unpack_array(arr, vall, game, offset=(0, 0)):
     for e in arr:
         pass
         if e[0] - offset[0] > 0 and e[0] - offset[0] < len(game.matrix[0]) \
-        and e[1] - offset[1] > 0 and e[1] - offset[1] < len(game.matrix):
-
+                and e[1] - offset[1] > 0 and e[1] - offset[1] < len(game.matrix):
             game.matrix_add(e[0] - offset[0], e[1] - offset[1], vall)
-
-
-def draw(im):
-    im_hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
-
-    player.draw_contours_return_bin(im, im_hsv)
-    axe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    pickaxe.draw_contours(im, cv2.cvtColor(im, cv2.COLOR_BGR2GRAY))
-    #green.draw_contours_return_bin(im, im_hsv)
-    #trees.draw_contours_return_bin(im, im_hsv)
-    #rock.draw_contours_return_bin(im, im_hsv)
-    #blackrock.draw_contours_return_bin(im, im_hsv)
-    #river.draw_contours_return_bin(im, im_hsv )
-    #terrain.draw_contours_return_bin(im, im_hsv )
 
 
 def cut(im):
